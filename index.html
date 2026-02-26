@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh" class="antialiased">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>九鼎人力资源-简历库</title>
+    <title>九鼎人力资源 - iOS 26 Glass (Silky Motion)</title>
     <!-- 引入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 引入 React 和 ReactDOM -->
@@ -11,16 +11,202 @@
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <!-- 引入 Babel 实时编译 JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- 配置 Tailwind 主题以支持流体玻璃风与暗黑模式 -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            red: '#D32F2F',
+                            gold: '#D4AF37'
+                        }
+                    },
+                    animation: {
+                        'blob': 'blob 15s infinite alternate',
+                        'blob-reverse': 'blob-reverse 18s infinite alternate',
+                        'blob-slow': 'blob 25s infinite alternate',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1) rotate(0deg)' },
+                            '33%': { transform: 'translate(50px, -80px) scale(1.1) rotate(45deg)' },
+                            '66%': { transform: 'translate(-40px, 40px) scale(0.9) rotate(-45deg)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1) rotate(0deg)' }
+                        },
+                        'blob-reverse': {
+                            '0%': { transform: 'translate(0px, 0px) scale(1) rotate(0deg)' },
+                            '33%': { transform: 'translate(-50px, 80px) scale(1.2) rotate(-45deg)' },
+                            '66%': { transform: 'translate(40px, -40px) scale(0.8) rotate(45deg)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1) rotate(0deg)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body { 
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            transition: background-color 0.6s cubic-bezier(0.22, 1, 0.36, 1), color 0.6s ease;
+            overflow-x: hidden;
+            background-color: #F5F5F7; /* iOS Light background */
+        }
+        
+        body.dark {
+            background-color: #000000; /* iOS Dark background */
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.3); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(211, 47, 47, 0.6); }
+        
+        /* 🍎 iOS 26 级超清毛玻璃特效 */
+        .ios-glass {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(40px) saturate(200%);
+            -webkit-backdrop-filter: blur(40px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 8px 32px -4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .dark .ios-glass {
+            background: rgba(30, 30, 30, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 12px 40px -4px rgba(0, 0, 0, 0.4);
+        }
+
+        /* 🍎 重度毛玻璃 (用于弹窗和悬浮岛) */
+        .ios-glass-heavy {
+            background: rgba(255, 255, 255, 0.55);
+            backdrop-filter: blur(60px) saturate(250%);
+            -webkit-backdrop-filter: blur(60px) saturate(250%);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 30px 60px -10px rgba(0, 0, 0, 0.15);
+        }
+
+        .dark .ios-glass-heavy {
+            background: rgba(20, 20, 20, 0.65);
+            backdrop-filter: blur(60px) saturate(250%);
+            -webkit-backdrop-filter: blur(60px) saturate(250%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 30px 60px -10px rgba(0, 0, 0, 0.7);
+        }
+        
+        /* 🍎 输入框玻璃效果 */
+        .ios-input-glass {
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .dark .ios-input-glass {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* 平滑大圆角 */
+        .squircle-lg { border-radius: 2.5rem; }
+        .squircle-md { border-radius: 1.5rem; }
+        .squircle-sm { border-radius: 1rem; }
+
+        /* 渐变文字 */
+        .text-gradient-light { background: linear-gradient(135deg, #000000 0%, #434343 100%); -webkit-background-clip: text; color: transparent; }
+        .text-gradient-dark { background: linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%); -webkit-background-clip: text; color: transparent; }
+
+        /* 🚀 核心动效：滚动触发动画 (Scroll Reveal) */
+        @keyframes scrollRevealAnim {
+            0% { opacity: 0; transform: translateY(60px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .scroll-reveal-animate {
+            animation: scrollRevealAnim 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* 🚀 核心动效：全局丝滑进场 */
+        @keyframes smoothFloatUp {
+            0% { opacity: 0; transform: translateY(40px) scale(0.96); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-smooth-up {
+            opacity: 0;
+            animation: smoothFloatUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* 🚀 核心动效：弹窗重力弹簧进场 */
+        @keyframes modalSpringPop {
+            0% { opacity: 0; transform: translateY(80px) scale(0.92); }
+            60% { opacity: 1; transform: translateY(-4px) scale(1.01); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-modal-pop {
+            opacity: 0;
+            animation: modalSpringPop 0.7s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+        }
+
+        /* 🚀 核心动效：弹窗背景动态模糊渐入 */
+        @keyframes backdropBlurIn {
+            0% { background-color: rgba(0,0,0,0); backdrop-filter: blur(0px); }
+            100% { background-color: rgba(0,0,0,0.4); backdrop-filter: blur(16px); }
+        }
+        .dark @keyframes backdropBlurIn {
+            0% { background-color: rgba(0,0,0,0); backdrop-filter: blur(0px); }
+            100% { background-color: rgba(0,0,0,0.7); backdrop-filter: blur(16px); }
+        }
+        .animate-backdrop-in {
+            animation: backdropBlurIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* 🚀 核心动效：元素级联滑入 */
+        @keyframes cascadeSlideIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .cascade-item {
+            opacity: 0;
+            animation: cascadeSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* 🚀 核心动效：弹窗关闭动效 (Exit Animations) */
+        @keyframes modalScaleDown {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(80px) scale(0.92); pointer-events: none; }
+        }
+        .animate-modal-out {
+            animation: modalScaleDown 0.4s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+        }
+
+        @keyframes backdropBlurOut {
+            0% { background-color: rgba(0,0,0,0.4); backdrop-filter: blur(16px); }
+            100% { background-color: rgba(0,0,0,0); backdrop-filter: blur(0px); pointer-events: none; }
+        }
+        .dark @keyframes backdropBlurOutDark {
+            0% { background-color: rgba(0,0,0,0.7); backdrop-filter: blur(16px); }
+            100% { background-color: rgba(0,0,0,0); backdrop-filter: blur(0px); pointer-events: none; }
+        }
+        .animate-backdrop-out {
+            animation: backdropBlurOut 0.4s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+        }
+        .dark .animate-backdrop-out {
+            animation: backdropBlurOutDark 0.4s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+        }
+    </style>
 </head>
-<body class="bg-gray-50">
+<body class="text-gray-900 dark:text-gray-100 selection:bg-brand-red selection:text-white">
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useMemo, useEffect } = React;
+        const { useState, useMemo, useEffect, useRef } = React;
 
-        // --- 提取的图标组件 (替代 lucide-react，确保无依赖) ---
+        // --- 纤细感图标库 (iOS 风格) ---
         const Icon = ({ path, className }) => (
-            <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
                 {path}
             </svg>
         );
@@ -32,11 +218,95 @@
         const BookOpen = ({className}) => <Icon className={className} path={<><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></>} />;
         const Award = ({className}) => <Icon className={className} path={<><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></>} />;
         const Sparkles = ({className}) => <Icon className={className} path={<path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>} />;
-        const Loader2 = ({className}) => <Icon className={`${className}`} path={<path d="M21 12a9 9 0 1 1-6.219-8.56"/>} />;
+        const Loader2 = ({className}) => <Icon className={className} path={<path d="M21 12a9 9 0 1 1-6.219-8.56"/>} />;
         const Bot = ({className}) => <Icon className={className} path={<><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></>} />;
+        const MessageCircle = ({className}) => <Icon className={className} path={<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>} />;
+        const ChevronRight = ({className}) => <Icon className={className} path={<path d="m9 18 6-6-6-6"/>} />;
+        const X = ({className}) => <Icon className={className} path={<><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>} />;
+        
+        // 主题与多语言图标
+        const Sun = ({className}) => <Icon className={className} path={<><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></>} />;
+        const Moon = ({className}) => <Icon className={className} path={<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>} />;
+        const Monitor = ({className}) => <Icon className={className} path={<><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></>} />;
 
         // ==========================================
-        // 1. 原始简历数据
+        // 1. 语言字典 (Localization)
+        // ==========================================
+        const translations = {
+            zh: {
+                title: "九鼎人力资源",
+                subtitle: "Premium Executive",
+                searchPlaceholder: "搜索高端人才或岗位...",
+                contact: "联系我们",
+                talentUniverse: "Talent Universe",
+                subtitle2: "为您甄选全行业优质候选人",
+                found: "共检索到",
+                talents: "位匹配英才",
+                details: "详细履历",
+                noCandidates: "未检索到匹配的候选人",
+                gender: "性别",
+                age: "年龄",
+                ethnicity: "民族",
+                marital: "婚姻状况",
+                religion: "宗教",
+                city: "现居城市",
+                available: "到岗日期",
+                salary: "期望薪资",
+                experience: "工作经验",
+                education: "教育背景",
+                skills: "技能与语言",
+                language: "语言",
+                computer: "电脑",
+                others: "其他",
+                highlights: "补充说明与亮点",
+                scanQR: "扫码直达顾问",
+                wechat: "微信沟通",
+                close: "完成审阅",
+                aiTitle: "Gemini AI 智能解析",
+                generateEval: "生成洞察",
+                generateQ: "定制问题",
+                aiProcessing: "Gemini Engine Computing...",
+                aiPrompt: "一键唤醒 AI，深层解读候选人核心价值。"
+            },
+            en: {
+                title: "Jiuding HR",
+                subtitle: "Premium Executive",
+                searchPlaceholder: "Search talents or positions...",
+                contact: "Contact Us",
+                talentUniverse: "Talent Universe",
+                subtitle2: "Selecting top candidates across industries",
+                found: "Found",
+                talents: "matching talents",
+                details: "Details",
+                noCandidates: "No matching candidates found",
+                gender: "Gender",
+                age: "Age",
+                ethnicity: "Ethnicity",
+                marital: "Marital Status",
+                religion: "Religion",
+                city: "City",
+                available: "Available Date",
+                salary: "Expected Salary",
+                experience: "Experience",
+                education: "Education",
+                skills: "Skills & Languages",
+                language: "Language",
+                computer: "Computer",
+                others: "Others",
+                highlights: "Highlights",
+                scanQR: "Scan QR to contact",
+                wechat: "WeChat",
+                close: "Close Profile",
+                aiTitle: "Gemini AI Analysis",
+                generateEval: "Generate Insights",
+                generateQ: "Custom Questions",
+                aiProcessing: "Gemini Engine Computing...",
+                aiPrompt: "Wake up AI to deeply interpret candidate's core value."
+            }
+        };
+
+        // ==========================================
+        // 2. 原始简历数据
         // ==========================================
         const rawResumeData = `姓名： Khaing Thazin Thant
 性别：女
@@ -263,7 +533,7 @@ Hotel Scion ( 实习生， 4 个月 )
 性别：男
 民族：华人  (Chinese)
 宗教：佛教  (Buddhist)
-年龄： 22 岁  ( 按出生日期 2004 年 6 月 29 日推算 )
+年龄： 22 岁  ( 按出生日期 2004 年 6 月 29 ကို推算 )
 求职岗位：翻译（实习）
 求职地点：大哥大，仰光
 期望薪资：协商
@@ -728,7 +998,7 @@ AIE 酒店培训学院  ( 专业亚洲料理课程 )
 电脑能力：熟练使用  MS Office (Word, Excel) 、互联网及电子邮件
 其它技能：工作认真负责
 现居城市：仰光
-到岗日期： 2026 年 11 月 1 日
+到岗日期： 2026 年 1 月 11 日
 姓名： Ma Htoo Ei Khang
 性别：女
 民族：若开族  (Rakhine)
@@ -948,9 +1218,6 @@ AIE 酒店培训学院  ( 专业亚洲料理课程 )
 现居城市：江苏常州
 到岗日期：-`;
 
-        // ==========================================
-        // 2. 数据解析器
-        // ==========================================
         function parseResumes(text) {
             const resumes = [];
             const blocks = text.split(/姓名[：:]/g).filter(b => b.trim());
@@ -985,58 +1252,189 @@ AIE 酒店培训学院  ( 专业亚洲料理课程 )
         }
 
         // ==========================================
-        // 3. UI 组件
+        // 3. 自定义 Hook: 滚动触发器 (Scroll Reveal)
         // ==========================================
-        function App() {
-            const [searchTerm, setSearchTerm] = useState('');
-            const [selectedCandidate, setSelectedCandidate] = useState(null);
-            const [aiState, setAiState] = useState({ loading: false, result: '', error: '', type: '' });
+        function useScrollReveal(options = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }) {
+            const [isVisible, setIsVisible] = useState(false);
+            const domRef = useRef();
 
             useEffect(() => {
-                setAiState({ loading: false, result: '', error: '', type: '' });
-            }, [selectedCandidate]);
+                const observer = new IntersectionObserver(entries => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            setIsVisible(true);
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, options);
 
-            const callDeepSeekAPI = async (prompt, type) => {
-                const DEEPSEEK_API_KEY = "sk-5efa2dc64e9343e8b0abe6967ed153a1";
+                if (domRef.current) {
+                    observer.observe(domRef.current);
+                }
+
+                return () => {
+                    if (domRef.current) observer.unobserve(domRef.current);
+                };
+            }, [options.threshold, options.rootMargin]);
+
+            return [domRef, isVisible];
+        }
+
+        // ==========================================
+        // 4. 简历卡片组件 (带独立滚动动效)
+        // ==========================================
+        function CandidateCard({ candidate, index, onClick, t }) {
+            const [ref, isVisible] = useScrollReveal();
+            // 让一行内的卡片有轻微交错浮现感
+            const staggerDelay = (index % 4) * 80;
+
+            return (
+                <div 
+                    ref={ref} 
+                    className={`h-full ${isVisible ? 'scroll-reveal-animate' : 'opacity-0'}`} 
+                    style={isVisible ? { animationDelay: `${staggerDelay}ms` } : {}}
+                >
+                    <div 
+                        className="group ios-glass squircle-md overflow-hidden hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_20px_40px_-15px_rgba(255,255,255,0.08)] active:scale-[0.97] transition-all duration-500 flex flex-col h-full cursor-pointer"
+                        onClick={() => onClick(candidate)}
+                    >
+                        <div className="p-6 flex-grow relative z-10">
+                            <div className="flex justify-between items-start mb-5">
+                                <h3 className="text-xl font-bold text-gray-900 dark:text-white truncate pr-2 tracking-tight group-hover:text-brand-red dark:group-hover:text-brand-gold transition-colors duration-300" title={candidate.name}>
+                                    {candidate.name}
+                                </h3>
+                                <span className="px-2.5 py-1 text-[10px] font-bold rounded-lg bg-black/5 dark:bg-white/10 text-gray-600 dark:text-gray-300 whitespace-nowrap uppercase tracking-wider">
+                                    {candidate.gender} • {candidate.age}
+                                </span>
+                            </div>
+                            
+                            <div className="space-y-3 mb-6">
+                                <div className="flex items-center text-sm text-gray-700 dark:text-gray-200">
+                                    <Briefcase className="h-4 w-4 mr-3 text-brand-red dark:text-red-400 flex-shrink-0" />
+                                    <span className="font-medium truncate">{candidate.position}</span>
+                                </div>
+                                <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                                    <MapPin className="h-4 w-4 mr-3 opacity-60 flex-shrink-0" />
+                                    <span className="truncate">{candidate.location}</span>
+                                </div>
+                                <div className="flex items-center text-sm font-medium text-amber-600 dark:text-brand-gold">
+                                    <DollarSign className="h-4 w-4 mr-3 opacity-80 flex-shrink-0" />
+                                    <span className="truncate">{candidate.salary}</span>
+                                </div>
+                            </div>
+
+                            <div className="pt-4 border-t border-black/5 dark:border-white/10">
+                                <p className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1.5 font-semibold">{t.language}</p>
+                                <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 leading-relaxed" title={candidate['语言能力']}>
+                                    {candidate['语言能力'] || '-'}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div className="px-6 py-4 bg-black/[0.02] dark:bg-white/[0.02] border-t border-black/5 dark:border-white/10 flex items-center justify-between group-hover:bg-brand-red/5 transition-colors duration-300">
+                            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 group-hover:text-brand-red transition-colors">{t.details}</span>
+                            <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-brand-red transition-colors" />
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // ==========================================
+        // 5. 主 App 组件
+        // ==========================================
+        function App() {
+            const WECHAT_QR_URL = "QR.jpg"; 
+
+            // 状态管理
+            const [searchTerm, setSearchTerm] = useState('');
+            const [selectedCandidate, setSelectedCandidate] = useState(null);
+            const [isClosing, setIsClosing] = useState(false);
+            const [aiState, setAiState] = useState({ loading: false, result: '', error: '', type: '' });
+            const [showModalQR, setShowModalQR] = useState(false);
+            
+            // --- 多语言管理 ---
+            const [lang, setLang] = useState('zh');
+            const t = translations[lang];
+
+            // --- 主题模式管理 ---
+            const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'system');
+
+            useEffect(() => {
+                const root = window.document.documentElement;
+                const rootBody = window.document.body;
+                const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
                 
-                setAiState({ loading: true, result: '', error: '', type });
-                const url = `https://api.deepseek.com/chat/completions`;
-                const payload = {
-                    model: "deepseek-chat",
-                    messages: [
-                        { role: "system", content: "你是一位专业的人力资源专家和面试官。" },
-                        { role: "user", content: prompt }
-                    ]
+                const applyTheme = () => {
+                    root.classList.remove('light', 'dark');
+                    rootBody.classList.remove('light', 'dark');
+                    if (theme === 'system') {
+                        const isDark = mediaQuery.matches;
+                        root.classList.add(isDark ? 'dark' : 'light');
+                        rootBody.classList.add(isDark ? 'dark' : 'light');
+                    } else {
+                        root.classList.add(theme);
+                        rootBody.classList.add(theme);
+                    }
                 };
 
-                const delays = [1000, 2000, 4000];
+                applyTheme();
+                localStorage.setItem('theme', theme);
+
+                const handleChange = () => { if (theme === 'system') applyTheme(); };
+                mediaQuery.addEventListener('change', handleChange);
+                return () => mediaQuery.removeEventListener('change', handleChange);
+            }, [theme]);
+
+            // 清理状态
+            useEffect(() => {
+                setAiState({ loading: false, result: '', error: '', type: '' });
+                setShowModalQR(false);
+            }, [selectedCandidate]);
+
+            // --- 🤖 处理弹窗关闭 ---
+            const handleCloseModal = () => {
+                setIsClosing(true);
+                setTimeout(() => {
+                    setSelectedCandidate(null);
+                    setIsClosing(false);
+                }, 400); 
+            };
+
+            // --- 🤖 Gemini AI 调用 ---
+            const callGeminiAPI = async (prompt, type) => {
+                const apiKey = ""; 
+                
+                setAiState({ loading: true, result: '', error: '', type });
+                const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=" + apiKey;
+                const payload = {
+                    contents: [{ parts: [{ text: prompt }] }]
+                };
+
+                const delays = [1000, 2000, 4000, 8000, 16000];
                 
                 for (let i = 0; i <= delays.length; i++) {
                     try {
                         const response = await fetch(url, {
                             method: 'POST',
-                            headers: { 
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${DEEPSEEK_API_KEY}`
-                            },
+                            headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify(payload)
                         });
                         
                         if (!response.ok) {
-                            const errData = await response.json().catch(() => ({}));
-                            throw new Error(errData.error?.message || `HTTP error! status: ${response.status}`);
+                            throw new Error("HTTP error! status: " + response.status);
                         }
                         const data = await response.json();
                         
-                        if (data.choices && data.choices[0].message.content) {
-                            setAiState({ loading: false, result: data.choices[0].message.content, error: '', type });
+                        if (data.candidates && data.candidates[0].content.parts[0].text) {
+                            setAiState({ loading: false, result: data.candidates[0].content.parts[0].text, error: '', type });
                             return;
                         } else {
-                            throw new Error("Invalid response format from DeepSeek");
+                            throw new Error("Invalid response format from Gemini");
                         }
                     } catch (error) {
                         if (i === delays.length) {
-                            setAiState({ loading: false, result: '', error: `DeepSeek 请求失败: ${error.message}`, type: '' });
+                            setAiState({ loading: false, result: '', error: "Gemini 请求失败 (Request Failed): " + error.message, type: '' });
                             return;
                         }
                         await new Promise(resolve => setTimeout(resolve, delays[i]));
@@ -1045,26 +1443,23 @@ AIE 酒店培训学院  ( 专业亚洲料理课程 )
             };
 
             const handleAIEvaluation = () => {
-                const prompt = `你是一位资深的人力资源专家（HR）。请根据以下候选人的简历，给出简明扼要的【AI 智能评估】。
-要求包含：
-1. 候选人的三大核心优势
-2. 可能存在的一个隐患或短板
-3. 整体推荐指数（使用 1-5 个 ★ 表示）
-
-简历内容如下：
-${selectedCandidate.fullText}`;
-                callDeepSeekAPI(prompt, 'eval');
+                let prompt = "";
+                if (lang === 'zh') {
+                    prompt = "你是一位资深的人力资源专家（HR）。请根据以下候选人的简历，给出简明扼要的【AI 智能评估】。\n要求包含：1. 候选人的三大核心优势 2. 可能存在的一个隐患或短板 3. 整体推荐指数（使用 1-5 个 ★ 表示）\n简历内容如下：\n" + selectedCandidate.fullText;
+                } else {
+                    prompt = "You are a senior HR expert. Based on the candidate's resume, provide a concise AI assessment.\nMust include: 1. Top 3 core advantages. 2. One potential risk or shortcoming. 3. Overall recommendation rating (1-5 ★).\nResume content:\n" + selectedCandidate.fullText;
+                }
+                callGeminiAPI(prompt, 'eval');
             };
 
             const handleAIQuestions = () => {
-                const prompt = `你是一位专业的面试官。请根据以下候选人的简历内容，为其量身定制 3 个深度的面试问题。
-要求：
-- 问题不仅限于表面经历，还要考察其专业能力和解决问题的实际能力。
-- 语气专业，直接列出问题，不要输出多余的寒暄语。
-
-简历内容如下：
-${selectedCandidate.fullText}`;
-                callDeepSeekAPI(prompt, 'questions');
+                let prompt = "";
+                if (lang === 'zh') {
+                    prompt = "你是一位专业的面试官。请根据以下候选人的简历内容，为其量身定制 3 个深度的面试问题。\n要求：问题不仅限于表面经历，还要考察其专业能力和解决问题的实际能力。语气专业，直接列出问题，不要输出多余的寒暄语。\n简历内容如下：\n" + selectedCandidate.fullText;
+                } else {
+                    prompt = "You are a professional interviewer. Based on the candidate's resume, tailor 3 in-depth interview questions.\nRequirements: Questions should test professional skills and problem-solving abilities, not just superficial experience. Be professional and list the questions directly without pleasantries.\nResume content:\n" + selectedCandidate.fullText;
+                }
+                callGeminiAPI(prompt, 'questions');
             };
 
             const candidates = useMemo(() => parseResumes(rawResumeData), []);
@@ -1081,223 +1476,282 @@ ${selectedCandidate.fullText}`;
             }, [candidates, searchTerm]);
 
             return (
-                <div className="min-h-screen bg-gray-50 font-sans text-gray-800">
-                    <header className="bg-black text-white shadow-lg sticky top-0 z-10 border-b-4 border-red-700">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between">
-                            <div className="flex items-center space-x-4">
-                                <div className="relative h-14 w-14 bg-red-700 rounded-full flex items-center justify-center border-2 border-black overflow-hidden shadow-inner">
-                                    <img src="JD HR Logo.jpg" alt="Logo" className="absolute inset-0 w-full h-full object-cover" onError={(e) => e.target.style.display='none'} />
-                                    <div className="flex flex-col items-center justify-center z-[-1]">
-                                        <div className="w-4 h-4 rounded-full bg-yellow-500 flex items-center justify-center mb-1">
-                                            <div className="w-1.5 h-1.5 bg-red-700 transform rotate-45"></div>
-                                        </div>
-                                        <div className="text-black font-bold text-xs leading-none" style={{transform: 'scaleX(1.5)'}}>鼎</div>
-                                    </div>
+                <div className="min-h-screen relative font-sans">
+                    {/* --- 🍎 流光氛围背景 --- */}
+                    <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+                        <div className="dark:hidden absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-pink-300/40 rounded-full filter blur-[100px] animate-blob"></div>
+                        <div className="dark:hidden absolute bottom-[10%] right-[-5%] w-[40vw] h-[40vw] bg-blue-300/40 rounded-full filter blur-[120px] animate-blob-reverse animation-delay-2000"></div>
+                        <div className="dark:hidden absolute top-[20%] right-[15%] w-[35vw] h-[35vw] bg-purple-300/30 rounded-full filter blur-[90px] animate-blob-slow animation-delay-4000"></div>
+                        
+                        <div className="hidden dark:block absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-brand-red/20 rounded-full filter blur-[120px] animate-blob"></div>
+                        <div className="hidden dark:block absolute bottom-[5%] right-[-10%] w-[45vw] h-[45vw] bg-blue-900/30 rounded-full filter blur-[140px] animate-blob-reverse animation-delay-2000"></div>
+                        <div className="hidden dark:block absolute top-[15%] left-[20%] w-[30vw] h-[30vw] bg-brand-gold/10 rounded-full filter blur-[100px] animate-blob-slow animation-delay-4000"></div>
+                    </div>
+
+                    {/* --- 🍎 顶部通栏导航栏 --- */}
+                    <header className="sticky top-0 z-40 w-full ios-glass border-b border-black/5 dark:border-white/10 cascade-item shadow-sm" style={{ animationDelay: "0ms" }}>
+                        <div className="max-w-7xl mx-auto px-4 py-3 sm:px-6 sm:py-4 flex flex-col lg:flex-row items-center justify-between gap-4 transition-all duration-500">
+                            
+                            <div className="flex items-center space-x-3 cursor-pointer group active:scale-95 transition-transform duration-300 w-full lg:w-1/3 justify-center lg:justify-start">
+                                <div className="relative h-11 w-11 squircle-sm flex items-center justify-center border border-black/5 dark:border-white/10 overflow-hidden shadow-sm group-hover:scale-105 transition-transform duration-300">
+                                    <div className="absolute inset-0 bg-white dark:bg-black"></div>
+                                    <img src="JD HR Logo.jpg" alt="Logo" className="absolute inset-0 w-full h-full object-cover z-10" onError={(e) => e.target.style.display='none'} />
                                 </div>
-                                <div>
-                                    <h1 className="text-2xl font-black text-red-600 tracking-wider">九鼎人力资源</h1>
-                                    <p className="text-xs text-gray-400 tracking-widest">JIUDING HUMAN RESOURCES</p>
+                                <div className="flex flex-col justify-center">
+                                    <h1 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight leading-none">{t.title}</h1>
+                                    <p className="text-[10px] text-gray-500 dark:text-gray-400 tracking-wider font-medium uppercase mt-0.5">{t.subtitle}</p>
                                 </div>
                             </div>
                             
-                            <div className="mt-4 sm:mt-0 relative w-full sm:w-80">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Search className="h-5 w-5 text-gray-400" />
+                            <div className="flex items-center justify-center w-full lg:w-1/3 space-x-2 sm:space-x-3 order-3 lg:order-none mt-2 lg:mt-0">
+                                <div className="relative w-full max-w-sm group">
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <Search className="h-4 w-4 text-gray-400 group-focus-within:text-brand-red transition-colors duration-500" />
+                                    </div>
+                                    <input
+                                        type="text"
+                                        placeholder={t.searchPlaceholder}
+                                        className="block w-full pl-11 pr-4 py-2.5 ios-input-glass rounded-full text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:outline-none transition-all duration-500 shadow-sm focus:shadow-md"
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                    />
                                 </div>
-                                <input
-                                    type="text"
-                                    placeholder="搜索岗位、姓名、地点、语言..."
-                                    className="block w-full pl-10 pr-3 py-2 border-2 border-gray-700 rounded-md leading-5 bg-gray-900 text-gray-100 placeholder-gray-500 focus:outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600 sm:text-sm transition-colors"
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                />
+
+                                <div className="flex items-center ios-input-glass p-1 rounded-full shadow-sm flex-shrink-0">
+                                    <button 
+                                        onClick={() => setLang('zh')} 
+                                        className={"px-3 py-1.5 rounded-full transition-all active:scale-95 text-xs font-bold tracking-widest " + (lang === 'zh' ? 'bg-white shadow-sm text-gray-900 dark:bg-gray-700 dark:text-white' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white')}
+                                    >
+                                        中
+                                    </button>
+                                    <button 
+                                        onClick={() => setLang('en')} 
+                                        className={"px-3 py-1.5 rounded-full transition-all active:scale-95 text-xs font-bold tracking-widest " + (lang === 'en' ? 'bg-white shadow-sm text-gray-900 dark:bg-gray-700 dark:text-white' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white')}
+                                    >
+                                        EN
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center justify-center lg:justify-end space-x-3 w-full lg:w-1/3 order-2 lg:order-none">
+                                <div className="flex items-center ios-input-glass p-1 rounded-full shadow-sm">
+                                    <button onClick={() => setTheme('light')} className={"p-1.5 rounded-full transition-all active:scale-90 " + (theme === 'light' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white')}>
+                                        <Sun className="w-4 h-4" />
+                                    </button>
+                                    <button onClick={() => setTheme('system')} className={"p-1.5 rounded-full transition-all active:scale-90 " + (theme === 'system' ? 'bg-white dark:bg-gray-700 shadow-sm text-gray-900 dark:text-white' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white')}>
+                                        <Monitor className="w-4 h-4" />
+                                    </button>
+                                    <button onClick={() => setTheme('dark')} className={"p-1.5 rounded-full transition-all active:scale-90 " + (theme === 'dark' ? 'dark:bg-gray-700 shadow-sm text-white' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white')}>
+                                        <Moon className="w-4 h-4" />
+                                    </button>
+                                </div>
+
+                                <div className="flex items-center ios-input-glass rounded-full p-1 pr-3 group cursor-pointer hover:bg-white/50 dark:hover:bg-black/50 transition-all shadow-sm active:scale-95">
+                                    <div className="relative h-7 w-7 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700 mr-2">
+                                        <img src={WECHAT_QR_URL} alt="WeChat QR" className="w-full h-full object-cover bg-white" />
+                                        <div className="absolute right-0 top-12 hidden group-hover:block z-50 p-3 ios-glass-heavy squircle-md shadow-2xl w-48 origin-top-right transition-all">
+                                            <div className="bg-white p-2 rounded-xl">
+                                                <img src={WECHAT_QR_URL} alt="WeChat QR Large" className="w-full h-auto rounded-lg" />
+                                            </div>
+                                            <p className="text-center text-gray-800 dark:text-gray-200 text-xs font-semibold mt-2">{t.scanQR}</p>
+                                        </div>
+                                    </div>
+                                    <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">{t.contact}</span>
+                                </div>
                             </div>
                         </div>
                     </header>
 
-                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                        <div className="mb-6 flex justify-between items-center">
-                            <h2 className="text-xl font-bold border-l-4 border-red-600 pl-3 text-gray-900">
-                                人才简历库 <span className="text-sm font-normal text-gray-500 ml-2">({filteredCandidates.length} 位候选人)</span>
-                            </h2>
+                    {/* --- 主体内容区 --- */}
+                    <main className="max-w-7xl mx-auto px-6 pt-12 pb-16 min-h-[80vh]">
+                        <div className="mb-10 flex flex-col sm:flex-row justify-between items-end border-b border-black/5 dark:border-white/5 pb-4 cascade-item" style={{ animationDelay: "100ms" }}>
+                            <div>
+                                <h2 className="text-4xl font-light text-gray-900 dark:text-white tracking-tight">
+                                    {t.talentUniverse}
+                                </h2>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">{t.subtitle2}</p>
+                            </div>
+                            <div className="text-sm text-gray-600 dark:text-gray-300 mt-4 sm:mt-0 ios-glass px-5 py-2 rounded-full font-medium shadow-sm">
+                                {t.found} <span className="text-brand-red dark:text-brand-gold font-bold mx-1">{filteredCandidates.length}</span> {t.talents}
+                            </div>
                         </div>
 
+                        {/* 🍎 简历网格 (带有 IntersectionObserver 滚动触发) */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                            {filteredCandidates.map(candidate => (
-                                <div key={candidate.id} className="bg-white rounded-lg shadow border-t-4 border-t-red-700 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col">
-                                    <div className="p-5 flex-grow">
-                                        <div className="flex justify-between items-start mb-3">
-                                            <h3 className="text-lg font-bold text-gray-900 truncate pr-2" title={candidate.name}>
-                                                {candidate.name}
-                                            </h3>
-                                            <span className={`px-2 py-1 text-xs font-semibold rounded-full whitespace-nowrap ${
-                                                candidate.gender === '男' ? 'bg-blue-100 text-blue-800' : 
-                                                candidate.gender === '女' ? 'bg-pink-100 text-pink-800' : 'bg-gray-100 text-gray-800'
-                                            }`}>
-                                                {candidate.gender} | {candidate.age}
-                                            </span>
-                                        </div>
-                                        
-                                        <div className="space-y-2 mb-4">
-                                            <div className="flex items-center text-sm text-gray-700">
-                                                <Briefcase className="h-4 w-4 mr-2 text-red-600 flex-shrink-0" />
-                                                <span className="font-semibold truncate">{candidate.position}</span>
-                                            </div>
-                                            <div className="flex items-center text-sm text-gray-600">
-                                                <MapPin className="h-4 w-4 mr-2 text-gray-400 flex-shrink-0" />
-                                                <span className="truncate">{candidate.location}</span>
-                                            </div>
-                                            <div className="flex items-center text-sm text-gray-600">
-                                                <DollarSign className="h-4 w-4 mr-2 text-yellow-600 flex-shrink-0" />
-                                                <span className="truncate">{candidate.salary}</span>
-                                            </div>
-                                        </div>
-
-                                        <div className="mt-4 pt-4 border-t border-gray-100">
-                                            <p className="text-xs text-gray-500 font-semibold mb-1">语言能力</p>
-                                            <p className="text-xs text-gray-700 line-clamp-2" title={candidate['语言能力']}>
-                                                {candidate['语言能力'] || '未提供'}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="px-5 py-3 bg-gray-50 rounded-b-lg border-t border-gray-100">
-                                        <button onClick={() => setSelectedCandidate(candidate)} className="w-full text-center text-sm font-semibold text-red-700 hover:text-red-800 transition-colors py-1">
-                                            查看详细简历 &rarr;
-                                        </button>
-                                    </div>
-                                </div>
+                            {filteredCandidates.map((candidate, index) => (
+                                <CandidateCard 
+                                    key={candidate.id}
+                                    candidate={candidate}
+                                    index={index}
+                                    onClick={setSelectedCandidate}
+                                    t={t}
+                                />
                             ))}
                         </div>
 
                         {filteredCandidates.length === 0 && (
-                            <div className="text-center py-20 text-gray-500">
-                                <User className="h-16 w-16 mx-auto text-gray-300 mb-4" />
-                                <p className="text-lg">未找到匹配的候选人</p>
+                            <div className="text-center py-32 text-gray-400 dark:text-gray-600 animate-smooth-up">
+                                <Search className="h-16 w-16 mx-auto mb-6 opacity-40" />
+                                <p className="text-xl font-light">{t.noCandidates}</p>
                             </div>
                         )}
                     </main>
 
+                    {/* --- 🍎 沉浸式履历详情面板 --- */}
                     {selectedCandidate && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60 backdrop-blur-sm transition-opacity">
-                            <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
-                                <div className="bg-red-700 px-6 py-4 flex justify-between items-center text-white">
+                        <div className={"fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6 " + (isClosing ? 'animate-backdrop-out' : 'animate-backdrop-in')}>
+                            <div className="absolute inset-0" onClick={handleCloseModal}></div>
+                            
+                            <div className={"ios-glass-heavy w-full max-w-4xl h-[90vh] sm:h-auto sm:max-h-[90vh] rounded-t-[2.5rem] sm:squircle-lg shadow-[0_20px_60px_rgba(0,0,0,0.3)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.8)] flex flex-col relative " + (isClosing ? 'animate-modal-out' : 'animate-modal-pop')}>
+                                
+                                <div className="w-full flex justify-center pt-3 pb-1 sm:hidden">
+                                    <div className="w-12 h-1.5 bg-gray-400/50 rounded-full"></div>
+                                </div>
+
+                                <div className="px-6 sm:px-10 py-5 flex justify-between items-center border-b border-black/5 dark:border-white/10">
                                     <div>
-                                        <h2 className="text-2xl font-bold">{selectedCandidate.name}</h2>
-                                        <p className="text-red-100 text-sm mt-1">{selectedCandidate.position} • {selectedCandidate.location}</p>
+                                        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white tracking-tight mb-1.5">{selectedCandidate.name}</h2>
+                                        <div className="flex flex-wrap items-center gap-3 text-sm">
+                                            <span className="text-brand-red dark:text-brand-gold font-semibold px-3 py-1 bg-brand-red/10 dark:bg-brand-gold/10 rounded-full">{selectedCandidate.position}</span>
+                                            <span className="text-gray-600 dark:text-gray-400 flex items-center font-medium"><MapPin className="w-3.5 h-3.5 mr-1"/> {selectedCandidate.location}</span>
+                                        </div>
                                     </div>
-                                    <button onClick={() => setSelectedCandidate(null)} className="text-red-200 hover:text-white transition-colors p-2 bg-red-800 rounded-full hover:bg-red-900">
-                                        ✕
+                                    <button onClick={handleCloseModal} className="ios-input-glass p-2.5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 text-gray-600 dark:text-gray-300 active:scale-90 transition-transform duration-200">
+                                        <X className="w-5 h-5" />
                                     </button>
                                 </div>
 
-                                <div className="p-6 overflow-y-auto bg-gray-50 flex-grow">
-                                    <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-5 rounded-lg shadow-sm border border-indigo-100 mb-6">
-                                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 border-b border-indigo-200 pb-3 gap-3">
-                                            <h3 className="text-md font-bold text-indigo-900 flex items-center whitespace-nowrap">
-                                                <Bot className="w-5 h-5 mr-2 text-indigo-600" /> DeepSeek 智能助理
+                                <div className="p-6 sm:p-10 overflow-y-auto bg-transparent flex-grow space-y-6 scroll-smooth">
+                                    
+                                    <div className="relative p-6 squircle-md bg-white/40 dark:bg-black/40 border border-blue-500/20 dark:border-blue-400/20 shadow-sm overflow-hidden cascade-item" style={{ animationDelay: "100ms" }}>
+                                        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-purple-50/30 to-transparent dark:from-blue-900/20 dark:via-purple-900/10 pointer-events-none"></div>
+                                        <div className="relative z-10">
+                                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 pb-4 border-b border-black/5 dark:border-white/10 gap-4">
+                                                <h3 className="text-lg font-bold text-blue-800 dark:text-blue-300 flex items-center tracking-tight">
+                                                    <Bot className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" /> {t.aiTitle}
+                                                </h3>
+                                                <div className="flex space-x-3 w-full sm:w-auto">
+                                                    <button onClick={handleAIEvaluation} disabled={aiState.loading} className="flex-1 sm:flex-none flex items-center justify-center text-sm font-semibold ios-input-glass hover:bg-white/60 dark:hover:bg-white/20 text-gray-800 dark:text-gray-100 py-2 px-4 rounded-full shadow-sm active:scale-95 transition-all duration-300 disabled:opacity-50">
+                                                        {aiState.loading && aiState.type === 'eval' ? <Loader2 className="w-4 h-4 mr-2 animate-spin text-blue-500" /> : <Sparkles className="w-4 h-4 mr-2 text-blue-500" />}
+                                                        {t.generateEval}
+                                                    </button>
+                                                    <button onClick={handleAIQuestions} disabled={aiState.loading} className="flex-1 sm:flex-none flex items-center justify-center text-sm font-semibold ios-input-glass hover:bg-white/60 dark:hover:bg-white/20 text-gray-800 dark:text-gray-100 py-2 px-4 rounded-full shadow-sm active:scale-95 transition-all duration-300 disabled:opacity-50">
+                                                        {aiState.loading && aiState.type === 'questions' ? <Loader2 className="w-4 h-4 mr-2 animate-spin text-purple-500" /> : <Sparkles className="w-4 h-4 mr-2 text-purple-500" />}
+                                                        {t.generateQ}
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div className="min-h-[80px] flex items-center justify-center">
+                                                {aiState.loading && (
+                                                    <div className="text-center text-blue-500 animate-pulse flex flex-col items-center cascade-item">
+                                                        <Loader2 className="w-7 h-7 animate-spin mb-2" />
+                                                        <p className="text-[11px] font-bold tracking-[0.2em] uppercase">{t.aiProcessing}</p>
+                                                    </div>
+                                                )}
+                                                {aiState.error && (
+                                                    <div className="w-full p-4 ios-input-glass text-red-600 dark:text-red-400 squircle-sm border border-red-500/30 text-sm font-medium cascade-item">
+                                                        {aiState.error}
+                                                    </div>
+                                                )}
+                                                {aiState.result && !aiState.loading && (
+                                                    <div className="w-full text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap leading-relaxed font-medium cascade-item">
+                                                        {aiState.result}
+                                                    </div>
+                                                )}
+                                                {!aiState.loading && !aiState.result && !aiState.error && (
+                                                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{t.aiPrompt}</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="ios-input-glass p-6 sm:p-8 squircle-md shadow-sm cascade-item" style={{ animationDelay: "180ms" }}>
+                                        <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-6 flex items-center">
+                                            <User className="w-4 h-4 mr-2" /> Basic Profile
+                                        </h3>
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-y-6 gap-x-8 text-sm">
+                                            <InfoItem label={t.gender} value={selectedCandidate.gender} />
+                                            <InfoItem label={t.age} value={selectedCandidate.age} />
+                                            <InfoItem label={t.ethnicity} value={selectedCandidate['民族']} />
+                                            <InfoItem label={t.marital} value={selectedCandidate['婚姻情况']} />
+                                            <InfoItem label={t.religion} value={selectedCandidate.religion} />
+                                            <InfoItem label={t.city} value={selectedCandidate['现居城市']} />
+                                            <InfoItem label={t.available} value={selectedCandidate['到岗日期']} />
+                                            <InfoItem label={t.salary} value={selectedCandidate.salary} className="col-span-2 md:col-span-1 text-orange-600 dark:text-brand-gold font-bold" />
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 cascade-item" style={{ animationDelay: "260ms" }}>
+                                        <div className="ios-input-glass p-6 sm:p-8 squircle-md shadow-sm">
+                                            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-6 flex items-center">
+                                                <Briefcase className="w-4 h-4 mr-2" /> {t.experience}
                                             </h3>
-                                            <div className="space-x-3 flex w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
-                                                <button onClick={handleAIEvaluation} disabled={aiState.loading} className="flex items-center justify-center flex-1 sm:flex-none text-sm bg-indigo-600 hover:bg-indigo-700 text-white py-1.5 px-3 rounded-md transition-colors disabled:opacity-50 whitespace-nowrap">
-                                                    {aiState.loading && aiState.type === 'eval' ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Sparkles className="w-4 h-4 mr-1.5 text-yellow-300" />}
-                                                    智能评估
-                                                </button>
-                                                <button onClick={handleAIQuestions} disabled={aiState.loading} className="flex items-center justify-center flex-1 sm:flex-none text-sm bg-purple-600 hover:bg-purple-700 text-white py-1.5 px-3 rounded-md transition-colors disabled:opacity-50 whitespace-nowrap">
-                                                    {aiState.loading && aiState.type === 'questions' ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Sparkles className="w-4 h-4 mr-1.5 text-yellow-300" />}
-                                                    定制面试题
-                                                </button>
+                                            <div className="text-sm text-gray-800 dark:text-gray-300 whitespace-pre-line leading-relaxed font-medium">
+                                                {selectedCandidate['工作经验'] || '-'}
                                             </div>
                                         </div>
 
-                                        {aiState.loading && (
-                                            <div className="text-center py-6 text-indigo-400 flex flex-col items-center">
-                                                <Loader2 className="w-8 h-8 animate-spin mb-2 text-indigo-600" />
-                                                <p className="text-sm">DeepSeek 正在深度分析候选人经历...</p>
+                                        <div className="space-y-6">
+                                            <div className="ios-input-glass p-6 sm:p-8 squircle-md shadow-sm">
+                                                <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-6 flex items-center">
+                                                    <BookOpen className="w-4 h-4 mr-2" /> {t.education}
+                                                </h3>
+                                                <div className="text-sm text-gray-800 dark:text-gray-300 whitespace-pre-line leading-relaxed font-medium">
+                                                    {selectedCandidate['教育背景'] || '-'}
+                                                </div>
                                             </div>
-                                        )}
-                                        {aiState.error && (
-                                            <div className="p-4 bg-red-50 text-red-600 rounded-md text-sm border border-red-200">
-                                                {aiState.error}
-                                            </div>
-                                        )}
-                                        {aiState.result && !aiState.loading && (
-                                            <div className="p-4 bg-white rounded-md shadow-inner text-sm text-gray-800 whitespace-pre-wrap leading-relaxed border border-indigo-50 max-h-60 overflow-y-auto">
-                                                {aiState.result}
-                                            </div>
-                                        )}
-                                        {!aiState.loading && !aiState.result && !aiState.error && (
-                                            <p className="text-sm text-indigo-400 text-center py-2">点击上方按钮，让 AI 帮您快速洞察候选人亮点与风险。</p>
-                                        )}
-                                    </div>
 
-                                    <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200 mb-6">
-                                        <h3 className="text-md font-bold text-gray-900 border-b pb-2 mb-4 flex items-center">
-                                            <User className="w-5 h-5 mr-2 text-red-600" /> 基本信息
-                                        </h3>
-                                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-4 gap-x-6 text-sm">
-                                            <InfoItem label="性别" value={selectedCandidate.gender} />
-                                            <InfoItem label="年龄" value={selectedCandidate.age} />
-                                            <InfoItem label="民族" value={selectedCandidate['民族']} />
-                                            <InfoItem label="婚姻状况" value={selectedCandidate['婚姻情况']} />
-                                            <InfoItem label="宗教" value={selectedCandidate.religion} />
-                                            <InfoItem label="现居城市" value={selectedCandidate['现居城市']} />
-                                            <InfoItem label="期望薪资" value={selectedCandidate.salary} className="col-span-2 sm:col-span-1 text-yellow-700 font-semibold" />
-                                            <InfoItem label="到岗日期" value={selectedCandidate['到岗日期']} />
-                                            <InfoItem label="身份证" value={selectedCandidate['身份证编号']} className="col-span-2 sm:col-span-3 text-gray-500" />
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200 mb-6">
-                                        <h3 className="text-md font-bold text-gray-900 border-b pb-2 mb-4 flex items-center">
-                                            <Award className="w-5 h-5 mr-2 text-red-600" /> 技能与语言
-                                        </h3>
-                                        <div className="space-y-4 text-sm">
-                                            <div>
-                                                <span className="font-semibold text-gray-700 block mb-1">语言能力：</span>
-                                                <p className="text-gray-800 bg-blue-50 p-3 rounded">{selectedCandidate['语言能力'] || '-'}</p>
+                                            <div className="ios-input-glass p-6 sm:p-8 squircle-md shadow-sm">
+                                                <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-6 flex items-center">
+                                                    <Award className="w-4 h-4 mr-2" /> {t.skills}
+                                                </h3>
+                                                <div className="space-y-4 text-sm font-medium">
+                                                    <div>
+                                                        <span className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-1">{t.language}</span>
+                                                        <p className="text-gray-900 dark:text-gray-200">{selectedCandidate['语言能力'] || '-'}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-1">{t.computer}</span>
+                                                        <p className="text-gray-900 dark:text-gray-200">{selectedCandidate['电脑能力'] || '-'}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-1">{t.others}</span>
+                                                        <p className="text-gray-900 dark:text-gray-200">{selectedCandidate['其它技能'] || '-'}</p>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <span className="font-semibold text-gray-700 block mb-1">电脑能力：</span>
-                                                <p className="text-gray-800 whitespace-pre-line">{selectedCandidate['电脑能力'] || '-'}</p>
-                                            </div>
-                                            <div>
-                                                <span className="font-semibold text-gray-700 block mb-1">其它技能：</span>
-                                                <p className="text-gray-800 whitespace-pre-line">{selectedCandidate['其它技能'] || '-'}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200 mb-6">
-                                        <h3 className="text-md font-bold text-gray-900 border-b pb-2 mb-4 flex items-center">
-                                            <Briefcase className="w-5 h-5 mr-2 text-red-600" /> 工作经验
-                                        </h3>
-                                        <div className="text-sm text-gray-800 whitespace-pre-line leading-relaxed">
-                                            {selectedCandidate['工作经验'] || '暂无说明'}
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
-                                        <h3 className="text-md font-bold text-gray-900 border-b pb-2 mb-4 flex items-center">
-                                            <BookOpen className="w-5 h-5 mr-2 text-red-600" /> 教育背景
-                                        </h3>
-                                        <div className="text-sm text-gray-800 whitespace-pre-line leading-relaxed">
-                                            {selectedCandidate['教育背景'] || '暂无说明'}
                                         </div>
                                     </div>
 
                                     {selectedCandidate['补充说明与亮点'] && (
-                                        <div className="bg-yellow-50 p-5 rounded-lg shadow-sm border border-yellow-200 mt-6">
-                                            <h3 className="text-md font-bold text-yellow-800 pb-2 mb-2">补充说明与亮点</h3>
-                                            <div className="text-sm text-yellow-900 whitespace-pre-line leading-relaxed">
+                                        <div className="bg-orange-50/40 dark:bg-brand-gold/10 p-6 sm:p-8 squircle-md border border-orange-200/50 dark:border-brand-gold/20 cascade-item" style={{ animationDelay: "340ms" }}>
+                                            <h3 className="text-xs font-bold uppercase tracking-widest text-orange-700 dark:text-brand-gold mb-4">{t.highlights}</h3>
+                                            <div className="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-line leading-relaxed font-medium">
                                                 {selectedCandidate['补充说明与亮点']}
                                             </div>
                                         </div>
                                     )}
                                 </div>
                                 
-                                <div className="bg-gray-100 px-6 py-4 border-t flex justify-end">
-                                    <button onClick={() => setSelectedCandidate(null)} className="bg-gray-800 text-white px-6 py-2 rounded shadow hover:bg-black transition-colors">
-                                        关闭
+                                <div className="bg-white/30 dark:bg-black/30 px-6 sm:px-10 py-5 border-t border-black/5 dark:border-white/10 flex items-center justify-between sm:justify-end space-x-0 sm:space-x-4 relative backdrop-blur-xl cascade-item" style={{ animationDelay: "420ms" }}>
+                                    <div className="text-[10px] font-medium tracking-widest text-gray-400 dark:text-gray-500 hidden sm:block absolute left-10 uppercase">Jiuding HR OS 2.6</div>
+                                    
+                                    {showModalQR && (
+                                        <div className="absolute bottom-20 right-6 sm:right-40 z-50 p-4 ios-glass-heavy squircle-md shadow-2xl border border-green-500/30 w-56 animate-modal-pop">
+                                            <div className="bg-white p-2 rounded-xl">
+                                                <img src={WECHAT_QR_URL} alt="WeChat QR" className="w-full h-auto rounded-lg" />
+                                            </div>
+                                            <p className="text-center text-green-700 dark:text-green-500 text-sm font-bold mt-3 tracking-widest">{t.scanQR}</p>
+                                        </div>
+                                    )}
+                                    <button onClick={() => setShowModalQR(!showModalQR)} className="flex items-center ios-input-glass border border-green-300 dark:border-green-800 text-green-700 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 px-6 py-3 rounded-full shadow-sm active:scale-95 transition-all duration-300 font-bold">
+                                        <MessageCircle className="w-4 h-4 mr-2" />
+                                        <span>{t.wechat}</span>
+                                    </button>
+                                    
+                                    <button onClick={handleCloseModal} className="bg-gray-900 dark:bg-brand-red hover:bg-black dark:hover:bg-red-700 text-white px-8 py-3 rounded-full shadow-md active:scale-95 transition-all duration-300 font-bold tracking-wide">
+                                        {t.close}
                                     </button>
                                 </div>
                             </div>
@@ -1310,8 +1764,8 @@ ${selectedCandidate.fullText}`;
         function InfoItem({ label, value, className = "" }) {
             return (
                 <div className={className}>
-                    <span className="block text-xs text-gray-500 mb-1">{label}</span>
-                    <span className="block font-medium text-gray-900 truncate" title={value}>{value && value !== '-' ? value : '未提供'}</span>
+                    <span className="block text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">{label}</span>
+                    <span className="block text-sm font-bold text-gray-900 dark:text-gray-100 break-words" title={value}>{value && value !== '-' ? value : '-'}</span>
                 </div>
             );
         }
