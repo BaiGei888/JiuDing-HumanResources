@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>九鼎人力资源-简历库</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 React 和 ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- 引入 Babel 实时编译 JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-gray-50">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useMemo, useEffect } = React;
+
+        // --- 提取的图标组件 (替代 lucide-react，确保无依赖) ---
+        const Icon = ({ path, className }) => (
+            <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                {path}
+            </svg>
+        );
+        const Search = ({className}) => <Icon className={className} path={<><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></>} />;
+        const MapPin = ({className}) => <Icon className={className} path={<><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></>} />;
+        const Briefcase = ({className}) => <Icon className={className} path={<><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></>} />;
+        const DollarSign = ({className}) => <Icon className={className} path={<><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></>} />;
+        const User = ({className}) => <Icon className={className} path={<><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></>} />;
+        const BookOpen = ({className}) => <Icon className={className} path={<><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></>} />;
+        const Award = ({className}) => <Icon className={className} path={<><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></>} />;
+        const Sparkles = ({className}) => <Icon className={className} path={<path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>} />;
+        const Loader2 = ({className}) => <Icon className={`${className}`} path={<path d="M21 12a9 9 0 1 1-6.219-8.56"/>} />;
+        const Bot = ({className}) => <Icon className={className} path={<><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></>} />;
+
+        // ==========================================
+        // 1. 原始简历数据
+        // ==========================================
+        const rawResumeData = `姓名： Khaing Thazin Thant
+性别：女
+民族：缅族
+宗教：佛教
+年龄： 25 岁
+求职岗位：会计
+求职地点：-
+期望薪资：包吃住100万、不包吃住 130万
+身份证编号：-
+婚姻情况：未婚
+语言能力：缅甸语（母语、专业）、英语（熟练）、中文（基础， HSK 4 ）
+工作经验： ( 行业 / 职位 / 年限 )
+教育  /  自由职业教师（ 1-5 年级） /  年限未提供（学校假期期间）
+制造业  /  销售与市场（中文岗位） /  年限未提供（ Oji GS Packaging ）
+教育背景：缅甸语文学学士（达贡大学）；基础中文（仰光外国语大学）； HSK 3 级、 HSK 4 级（ Chinese O'clock ）； LCCI 1 级与 2 级会计证书（ Hlaing Min Latt Finance and Management Academy ）
+电脑能力：熟练使用  MS Word, Excel, PowerPoint
+其它技能：良好的沟通与人际交往能力；教学与辅导能力；耐心友善；写作、研究与分析能力；团队合作与独立工作能力；红十字志愿者经历（ 2019 年献血活动组织志愿者）
+现居城市：内比都
+到岗日期：商议
+姓名：陈兴明
+性别：男
+民族：汉人
+宗教：佛教
+年龄： 28 岁
+求职岗位：销售翻译
+求职地方：仰光
+期望薪资： 200 万  - 300 万缅币（需包吃住）
+身份证编号： -
+婚姻情况：单身
+语言能力：中文、缅语（母语或流利）
+工作经验：
+机械销售  /  销售翻译  /  半年
+翻译服务  /  口头翻译  /  半年
+教育背景：中文初中二年级、缅文十年级
+电脑能力：基础
+其它技能：学习能力强，能吃苦，正在准备考取驾照
+现居城市：仰光（ လိုင်သာယာကျန်စစ်မင်းအိမ်ရာ အပိုင်း၂တိုင်၂၂ ）
+到岗日期：目前无工作，可尽快
+姓名：李疏桐
+性别：女
+民族：傣族
+宗教信仰：佛教
+年龄： 30 岁  (1995 年 10 月 4 日 )
+求职岗位：翻译
+求职地方：仰光
+期望薪资： 60 万（要求包吃住）
+身份证编号： 13/KaMaNa(N)105455
+婚姻情况：未婚
+语言能力：中文、缅文
+工作经验：无
+教育背景：缅文（毕业），中文（第五册）
+电脑能力：会（基础）
+其它技能： -
+现居城市：仰光
+到岗日期：随时
+姓名： HTET NAING LYNN 
+性别：男  
+民族：缅族
+宗教信仰：佛教
+年龄： 22 岁  (2003 年 7 月 5 日 ) 
+求职岗位：实习生  (Intern) 
+求职地方：仰光
+期望薪资： 40 万 +
+身份证编号： -
+婚姻情况： -
+语言能力：中文  ( 中级 /HSK-4)  、英语  ( 中级 ) 
+工作经验：
+Hotel Scion ( 实习生， 4 个月 ) 
+销售助理  (Sale assistant) 
+教育背景： E-Major ( 大一 /1st Year) 
+电脑能力：基础电脑 +Word, Excel , PowerPoint 
+其它技能：学习速度快、有责任心、擅长团队合作  
+现居城市： South Dagon ( 南达贡 ) 
+到岗日期：随时
+姓名：Ma Thet Htar Lwin
+性别：女
+民族：缅族
+年龄：34岁
+求职岗位：酒店管理（前厅/值班经理/助理经理）、旅游运营、导游、家庭教师
+求职地方：曼德勒
+期望薪资：面议
+身份证编号：9/PUL (N)037945
+婚姻情况：未婚
+语言能力：英语（熟练）、中文（基础）、缅甸语（母语）
+工作经验：
+酒店业 / 餐饮接待、前台接待 / 1年 (2013-2014， Sedona Hotel)
+酒店业 / 前厅主管 / 2年 (2014-2016， Pine Hill Resort Hotel)
+酒店业 / 值班经理 / 1年 (2016-2017， Inle Resort Hotel)
+旅游业 / 运营及导游 / (Myanmar Yo Yo Travel & Tour)
+旅游业 / 导游 / 1年 (2017-2018， GM Travel & Tour)
+酒店业 / 助理经理 / 1年 (2022-2023， Shwe Hin Thar Hotel)
+教育/家教 / 全科及语言教师 / 2年 (2023-2025， 家庭教师)
+教育背景：Yadanarbon大学，理学学士（植物学）
+电脑能力：熟练使用Excel, Word；熟悉酒店Opera、Master系统；具备收银、销售记录等操作能力。
+其它技能：持有旅游英语（ESL）、主管必备技能、缅甸酒店与旅游部导游证书；具备酒店前台、收银、旅游运营及幼儿至小学全科教学能力。
+现居城市：Aye Thiri 9streets, KonTan, Mandalay
+到岗日期：接到面试通知后可尽快到岗
+姓名： Su Htet Htet Aung （苏甜）
+性别：女
+民族：若开
+宗教：佛教
+年龄：23岁
+求职岗位：办公室文员、行政助理、中缅翻译
+求职地方：仰光
+期望薪资：100万
+身份证编号：-
+婚姻情况：未婚
+语言能力：中文（ HSK 四级）、英语（中级）、缅甸语（母语）
+工作经验：
+教育行业  /  办公室职员  / 2 年（国际学校）
+制造业（鞋厂） /  办公室中缅翻译  / 1 年多
+教育背景：大学毕业
+电脑能力：熟练使用  Microsoft Office （ Word, Excel, PPT ）、 Google Workspace （ Docs, Sheets ）；掌握中、英、缅文打字。
+其它技能：文件处理、团队合作、沟通协调、学习与适应能力强、能在压力下工作、具备解决问题能力。
+现居城市：缅甸仰光市，博德涛镇区，波特涛塔路  (Pazuntaung Township, Yangon)
+到岗日期：2月份
+姓名：  Lae Mon Khaing
+性别：   女
+民族：   缅族
+宗教：   佛教
+年龄：  32
+求职岗位：  HR / ACCOUNTANT ( 人力资源 / 会计 )
+求职地点：  Yangon, Myanmar)
+期望薪资：   不低于 120 万
+身份证编号：  -
+婚姻情况：   未婚
+语言能力：   中文  (HSK3 通过，持续学习中 ) ；英语  ( 初级 )
+工作经验：
+制造业 / 分销  -  不锈钢厨具  /  人力资源主管  / 3 年 9 个月  (2021 年 1 月  - 2024 年 9 月，于 MINGXING 公司 )
+制造业 / 分销  -  不锈钢厨具  /  高级会计  / 5 年 4 个月  (2015 年 10 月  - 2021 年 1 月，于 MINGXING 公司 )
+商贸服务  /  助理财务  / 1 年 4 个月  (2014 年 4 月  - 2015 年 7 月，于 DKSH Co., Ltd.)
+教育背景：   仰光大学商业学士 (2014) ；国际商务管理文凭；人力资源证书；劳动法证书。
+电脑能力：  Microsoft Office ； SAP 软件使用经验。
+其它技能：   公共关系、团队合作、时间管理、领导力、有效沟通。
+现居城市：   缅甸，仰光省， 莱达雅
+到岗日期：   面试通过2周后
+姓名：  NANG SHOON THIRI WAI
+性别：   女
+民族：   掸族  (Shan)
+宗教：   佛教  (Buddhist)
+年龄：  27 岁  
+求职岗位：   出纳  (Cashier)
+求职地点：   -
+期望薪资：  70 万以上（需要包吃住）
+身份证编号：  13/HaPaNa(N)091379 
+婚姻情况：   单身  
+语言能力：   中文  (HSK 4 级通过 )
+工作经验：
+金融 / 小额信贷  /  助理行政官员  / 2 年 10 个月  (2023 年 3 月  - 2025 年 12 月，于 LOLC Microfinance)
+金融 / 银行  /  高级专员  /  年限未提供  ( 于 MAB Bank)
+教育背景：   东枝大学植物学理学士； LCCI 1 、 2 级证书；基础计算机课程。
+电脑能力：   基础计算机技能
+其它技能：   客户服务（前台部门）；现金部门业务。
+现居城市：   缅甸，掸邦南部， Hopong 镇区， Taung Yat
+到岗日期：  接到面试通知后可尽快到岗
+姓名：   郭家宽（ ကိုသန်းဌေး ）
+性别：   男
+民族：   华裔
+宗教：  ( 未提供 )
+年龄：  40 岁
+求职岗位：   中缅翻译  /  司机采购
+求职地方：   莱达亚、水碧达
+期望薪资：  200 万缅元
+身份证编号：  13/ ( 部分信息 )
+婚姻情况：   已婚
+语言能力：   强  ( 根据工作经历推断，中缅双语能力应非常熟练 )
+工作经验：
+能源 / 翻译  /  翻译协调员  / 3 年  ( 中石油 )
+通信 / 工程  /  工程管理  / 6 年  ( 光纤公司 )
+食品加工 / 采购  /  采购  / 2 年  ( 槟榔厂 )
+教育背景：   中文高中；缅文十年级毕业。
+电脑能力：  ---
+其它技能：  --
+现居城市：   仰光郊区
+到岗日期：   求职通过后
+姓名：若明通
+性别：男
+民族：穆斯林
+宗教：伊斯兰教
+年龄： 29 岁（1997.4.3）
+求职岗位：中缅翻译、项目管理、后勤管理
+求职地方：仰光及周边（根据住址推断，可协调）
+期望薪资：130万
+身份证编号：有
+婚姻情况：已婚
+语言能力：中文（流利，可进行口译、打字）、缅甸语（母语）
+工作经验：
+建筑安装行业  /  中缅翻译  +  人员技术管理  / 1 年  (2019.02-2020.02 ，   团队解散 )
+服装制造业  /  中缅翻译  +  后勤人员管理  /  约 5 个月  (2020.06-2020.11 ，   因疫情离职 )
+软件 / 互联网行业  /  中缅翻译  +  人员管理  /  约 1 年 4 个月  (2022.10-2024.02 ，   公司倒闭 )
+自由职业  /  线上中缅翻译  /  累计 4 年  ( 主要协助跨境贸易沟通 )
+教育背景：未接受正式学历教育（自学中文）
+电脑能力：基础操作，熟悉 Excel ，可进行手机 / 键盘中文输入
+其它技能：持有驾照，可驾驶；具备团队管理、跨文化沟通和快速学习能力。
+现居城市：仰光，丁干遵镇区， TBawga 街
+到岗日期：可尽快上岗（目前待业）
+补充说明与亮点：
+在中国云南长大，中文为实际生活和工作语言，口语流利，擅长跨境电商及商务沟通翻译，是核心优势。
+经验跨越多行业：在建筑、服装、 IT 及自由翻译领域均有实践经验，适应性强。
+稳定性说明：过往离职原因均为客观因素（项目结束、疫情、公司倒闭），工作意愿稳定。
+姓名：雷佳文
+性别：男
+民族：缅甸华侨
+宗教：佛教
+年龄： 31 岁（按 1995 年出生计算）
+求职岗位：翻译及其它相关职位
+求职地点：未提供
+期望薪资：月薪 150-200 万
+身份证编号：未提供
+婚姻情况：已婚
+语言能力：中文（流利）、缅文（流利）
+工作经验： ( 行业 / 职位 / 年限 )
+制造业  /  海绵鞋垫部门主管  / 3 年
+手机销售  /  销售主管  / 2 年
+礼品制造  /  车间翻译兼仓库管理  / 3 年
+制衣  /  翻译助理兼业务跟单员  /  年限未提供
+教育背景：中文：高中（ 2012 年毕业）；缅文： 10 年级（ 2009 年毕业）
+电脑能力：熟悉基本操作，会使用 Word, Excel
+其它技能：驾驶
+现居城市：缅甸依乐瓦迪省博格勒
+到岗日期：未提供
+姓名： Sai Satt Paing
+性别：男
+民族：华人  (Chinese)
+宗教：佛教  (Buddhist)
+年龄： 22 岁  ( 按出生日期 2004 年 6 月 29 日推算 )
+求职岗位：翻译（实习）
+求职地点：大哥大，仰光
+期望薪资：协商
+身份证编号： -
+婚姻情况：单身  (Single)
+语言能力：缅甸语  ( 母语 ) 、英语  ( 中级 ) 、中文  (HSK3)
+工作经验： ( 行业 / 职位 / 年限 )
+酒店餐饮  /  服务员  / 1 年  (Novotel Hotel Yangon Max)
+酒店餐饮  /  服务员  / 1 年  (Golden Duck Restaurant)
+教育背景：高中毕业  (2020 年 )
+电脑能力：熟练  Microsoft Office Word, Excel, PowerPoint ；掌握  Adobe Photoshop CS5
+其它技能：中文口语  ( 持有证书 )
+现居城市：缅甸仰光  ( 地址： Ngr Myar Tan Gone Street, East Gyogone Insein Yangon)
+到岗日期：未提供
+姓名： May Myat Mon
+性别：女
+民族：缅族
+宗教：佛教
+年龄： 25 岁
+求职岗位：翻译（实习生）
+求职地点：仰光
+期望薪资： 60-70 万
+身份证编号： -
+婚姻情况：未婚
+语言能力：中文 (HSK 3) 、英语 ( 基础 ) 、缅甸语 ( 母语 )
+工作经验： ( 行业 / 职位 / 年限 )
+综合控股  /  办公室职员  / 2 年  (UNICO HOLDING COMPANY)
+海产贸易  /  理货员 (Tally) / 1 年  (GRAND WIN TWIN BROTHERS SEAFOOD COMPANY)
+教育背景：
+马乌兵大学   历史专业  ( 第二年在读 )
+YS 中文中心  ( 第 6 级 )
+MQS 中文中心  (HSK 3)
+Excel 会计课程
+AIE 酒店培训学院  ( 专业亚洲料理课程 )
+电脑能力：熟练使用 Microsoft Excel 进行数据处理  ( 有 Excel 会计学习经验及办公室实践 )
+其它技能：亚洲料理
+现居城市：缅甸仰光  ( 地址： 44th Street Lower Block Botataung)
+到岗日期： -
+姓名：杨恒旺
+性别：男
+民族： 华裔
+宗教：佛教
+年龄： 39 岁
+求职岗位：司机翻译
+求职地点：仰光
+期望薪资： 150 万
+身份证编号： 13/KAKHANA(N)056835
+婚姻情况：已婚
+语言能力：中文、缅文（沟通流利）
+工作经验： ( 行业 / 职位 / 年限 )
+房地产  /  中介、销售  / 4 年
+销售  /  未注明具体岗位  / 2.5 年
+建筑  /  未注明具体岗位  / 4 年
+工厂  /  翻译  / 2 年多
+餐饮  /  厨师  / 4 年
+教育背景：中文初中毕业；缅文八年级（ 2002 年毕业）
+电脑能力：未提供
+其它技能：驾驶（二十多年经验，有驾驶证）
+现居城市：缅甸仰光市莱达雅区拿瓦低小区
+到岗日期：可尽快上岗
+姓名： Phoo Pwint
+性别：女
+民族：缅族
+宗教：佛教
+年龄： 24 岁
+求职岗位：文员、会计
+求职地点：仰光
+期望薪资： 50-70 万
+身份证编号： -
+婚姻情况：未婚
+语言能力：英语  ( 中级 )
+工作经验： ( 行业 / 职位 / 年限 )
+饮用水净化  /  销售与市场  / 2 年  (2019.04 - 2021.03 ， ATT purify drinking water)
+教育培训  /  计算机语言中心助理  / 2 年多  (2022.02 - 2024.04 ， Jupiter)
+电信 / 网络  /  高级财务  /  至今  (2024.08 起， Frontiir (Myanmar Net))
+教育背景：远程教育学院  ( 马乌宾 )  缅甸语专业   第一年在读  (2020 年入学 )
+电脑能力：熟练  Microsoft Word, Excel, PowerPoint, Email
+其它技能：未提供
+现居城市：缅甸仰光省 Hlaing Thar Yar 镇区  ( 地址： No(1671),Thamardi street,5 Ward, AhsintMyint)
+到岗日期：可尽快上岗
+姓名： Ma Nyein Nyein Moe
+性别：女
+民族：缅族
+宗教：佛教
+年龄： 23 岁
+求职岗位：中缅翻译
+求职地点： Hlaing Thar Yar, Shwe Pyi Thar, Insein （仰光相关镇区）
+期望薪资： 90 万+
+身份证编号： 14/Nyatana(Naing)219586
+婚姻情况：单身
+语言能力：中文、缅文
+工作经验： ( 行业 / 职位 / 年限 )
+餐饮业  /  翻译兼服务员  / 1 年
+教育背景：数学理学士  ( 第一年在读 ) ；金光学院毕业证书
+电脑能力：计算机基础
+其它技能：服务员、中文翻译、客户服务
+现居城市：伊洛瓦底省  Nyaung Don  镇区
+到岗日期：面试通过后尽快到岗
+姓名： Khin Thandar Aung
+性别：女
+民族：缅族
+宗教：佛教
+年龄： 27 岁
+求职岗位：中文办公室职员
+求职地点：曼德勒
+期望薪资：面议
+身份证编号： -
+婚姻情况：未婚
+语言能力：中文  (HSK 3) 、英语  ( 中级 ) 、缅甸语  ( 母语 )
+工作经验： ( 行业 / 职位 / 年限 )
+电信 / 互联网  /  助理会计师  / 5 年  (Frontiir Co.Ltd ，  2020-2025)
+教育背景：经济学学士  ( 瑞保大学， 2019 年 ) ； LCCI II  会计文凭；商务应用 Microsoft Excel 证书
+电脑能力：熟练使用 Advanced Excel 、 ERP 及 RT 软件；熟练英文及缅文键盘打字
+其它技能：良好沟通能力；中文会话（中级）
+现居城市：缅甸仰光
+到岗日期： -
+姓名：梁友安
+性别：女
+民族： Kayin （克伦族）
+宗教：佛教
+年龄： 25 岁
+求职岗位：翻译员
+求职地点：仰光 North Dagon 附近（如距离远需包吃住）
+期望薪资： 150 万
+身份证编号： -
+婚姻情况：未婚
+语言能力：汉语（ HSK  四级）、英语
+工作经验： ( 行业 / 职位 / 年限 )
+服装制造  /  翻译员  / 1 年  ( 鲍勃农服工厂，  2023-2024)
+科技 / 服装制造  /  车工  / 2 年  ( 惠安县双喜科技有限公司，  2024-2026)
+教育背景：汤古计算机大学   计算机科学专业  ( 大三肄业， 2017-2020) ；双喜科技学校   中文语言课程  (2024-2025)
+电脑能力：熟练使用  Microsoft Office (Word, Excel)
+其它技能：精通服装生产缝制环节（除拉链工序外）；快速学习能力
+现居城市：仰光  North Dagon
+到岗日期：立即
+姓名：张同美  (Cho Cho Lwin)
+性别：女
+民族：缅族
+宗教：佛教
+年龄： 22 岁
+求职岗位：翻译  /  实习翻译
+求职地点：仰光（需要包吃住）
+期望薪资：面议
+身份证编号： 13/
+婚姻情况：未婚
+语言能力：中文  (HSK 4 以上 )
+工作经验： ( 行业 / 职位 / 年限 )
+零售  /  销售  / 2 年  ( 眼镜店， 2021-2023)
+教育背景：缅甸大学   大四在读；中文水平  HSK 4 以上
+电脑能力：会用电脑基础
+其它技能： -
+现居城市：东枝
+到岗日期：面试通过后四天内
+姓名： Aye Nandar Aung
+性别：女
+民族：缅族
+宗教：佛教
+年龄： 39 岁
+求职岗位：财务经理 / 高级财务职位
+求职地点：居家办公
+期望薪资：面议
+身份证编号： -
+婚姻情况： -
+语言能力：英语（中级）、缅甸语（母语）
+工作经验： ( 行业 / 职位 / 年限 )
+房地产 / 资产管理  /  助理财务经理  /  约 0.75 年  (Inno Asset Company Limited ，  2025.3-2025.12)
+快速消费品 (F&N) /  高级会计主管  / 4 年  (Fraser and Neave Limited ，  2020-2024)
+快速消费品 (F&N) /  高级会计主管  /  约 2.25 年  (Fraser and Neave Limited ，  2017.10-2020.1)
+综合集团 (UMG) /  分支机构财务与会计主管  / 3 年  (UMG Group of Companies ，  2014.6-2017.6)
+教育  /  高级会计师  /  约 2.75 年  (Pride ISM International School ，  2010.12-2013.9)
+教育背景：英语学士（西仰光远程教育大学， 2003-2006 ）；国际财务报告文凭（ 2012-2013 ）；计算机化会计文凭（ MYOB ）（ 2010 ）；会计文凭（ LCCI-UK ）（ 2008-2009 ）
+电脑能力：熟练使用  Microsoft Office, MYOB, Peachtree, SAP, QuickBooks, Xero  等会计及办公软件
+其它技能：财务分析、报告编制、团队管理、细节导向、抗压能力、时间管理
+现居城市：泰国北榄府  Pak Kret
+到岗日期：立即
+姓名： Yawai Aung ( 李光辉 )
+性别：男
+民族：傣族
+宗教：佛教
+年龄： 21 岁  
+求职岗位：翻译或者其他职位
+求职地点：仰光
+期望薪资：面议
+身份证编号：-
+婚姻情况：单身
+语言能力：中文  (HSK 5 级，学习中 ) 、缅甸语
+工作经验： ( 行业 / 职位 / 年限 )
+制造业  /  翻译  /  年限未提供  ( 缅甸光鼎有限公司 )
+制造业  /  特殊翻译兼助理  /  年限未提供  ( 万和 )
+制造业  /  出货部  /  年限未提供  ( 创美工厂 )
+制造业  /  翻译  /  年限未提供  ( 光向有限公司 )
+制造业  / IE 部翻译  /  年限未提供  ( 恒田 2 厂 )
+纺织检验  /  系统操作兼翻译  /  年限未提供  (YS Myanmar Textile Inspection)
+教育背景： HSK 5 级  ( 学习中 ) ；已通过缅甸 10 年级
+电脑能力：会使用  Word, Excel, PowerPoint
+其它技能：-
+现居城市：仰光
+到岗日期：-
+姓名：武忠泰
+性别：男
+民族：傣族
+宗教：佛教
+年龄： 40 岁
+求职岗位：司机翻译
+求职地点：仰光
+期望薪资： 150 万
+身份证编号： 13/NaHsaNa(N)049304
+婚姻情况：未婚
+语言能力：语言能力良好，英语基础
+工作经验： ( 行业 / 职位 / 年限 )
+综合  /  司机翻译、市场推广、办公室文员  / 3 年（其中 2 年担任老板随行翻译）
+教育背景：缅甸大学（一年级）
+电脑能力：会使用  Word  和  Excel
+其它技能：驾驶、会开叉车
+现居城市：缅甸仰光，水林班
+到岗日期：面试通过后一个星期内
+姓名： Khin Myo Hlaing
+性别：女
+民族：缅族
+宗教：佛教（ Buddha ）
+年龄： 27 岁
+求职岗位：高级会计师（ Senior Accountant ）
+求职地点：仰光
+期望薪资：可协商（ Nego ）
+身份证编号： 7/PKN (N) 439994
+婚姻情况：单身（ Single ）
+语言能力：英语（中级）、日语（ N4 ）、中文（基础）、缅甸语（母语）
+工作经验： ( 行业 / 职位 / 年限 )
+建筑装饰  /  高级会计师  /  约 1 年（ Myanmar Hongcheng ，  2023 年）
+汽车 / 零售  /  会计与行政主管  / 1.5 年（ Agarocorp (TVS) ，  2022.1-2023.7 ）
+商业  /  关键会计师（分行）  /  约 3 年（ Europe & Asia Commercial ，  2019-2021.12 ）
+教育背景：勃固大学   物理理学士； LCCI 3 级； ACCA Part 1 ；审计、财务管理、新加坡工作培训等证书
+电脑能力：熟练使用  Quickbooks, Xero, MYOB, Odoo  等会计软件；精通  Microsoft Office 365 (Excel, Word, PPT, Outlook)
+其它技能：数据分析、能在压力下工作、良好的时间管理、注重细节、学习能力强、沟通技巧、批判性思维、勤奋、领导力
+现居城市：缅甸仰光  North Okkalapa
+到岗日期：-
+姓名： Ma Min Min Aung
+性别：女
+民族：华裔
+宗教：佛教
+年龄： 23 岁
+求职岗位：中文翻译  /  采购员
+求职地点：曼德勒
+期望薪资：可协商
+身份证编号： 5/KALATA(N)128130
+婚姻情况：单身
+语言能力：缅甸语（母语）、英语、中文（初中毕业， HSK 5 ）
+工作经验： ( 行业 / 职位 / 年限 )
+制造业（ Color Co.Ltd  或  GP Watch ）  /  中文翻译兼采购员  / 1.5 年  (2024 年 6 月 1 日  -  至今，已辞职 )
+教育  /  自由职业中文教师  / 2 年
+教育背景：马来西亚林肯大学商业管理学士；商业管理文凭；人力资源管理 / 薪资 / 劳动法证书；计算机基础、高级 Excel 、 HSK 5 证书
+电脑能力：熟练使用  Microsoft Office (Word, Excel, PPT) ；互联网及电子邮件应用
+其它技能：沟通与管理技能
+现居城市：缅甸曼德勒  Maharauangmyae  镇区
+到岗日期：-
+姓名： Shoon Lae Soe Kyaw
+性别：女
+民族：缅族
+宗教：佛教
+年龄：27
+求职岗位：行政与人事专员、中文翻译
+求职地点：仰光
+期望薪资：100万（面议）
+身份证编号：-
+婚姻情况：未婚
+语言能力：英语、中文（ HSK 4 ）
+工作经验： ( 行业 / 职位 / 年限 )
+咨询  /  中文办公室职员  /  约 2 年  (Myanmar Win Win Consulting ，  2024-2026.1)
+安保服务  /  人事行政  / 1 年  (Sino Protection ，  2022-2023)
+教育  /  人事主管  / 1 年  (Improve Knowledge Education ，  2023-2024)
+商业  /  页面销售行政  /  少于 1 年  (Standard of Future ，  2022)
+教育  /  行政助理  /  少于 1 年  (Premium Education Centre ，  2021)
+教育背景：工程学学士（西仰光科技大学， 2015-2020 ）；商业管理与行政文凭（ Strategy First University ）；商业管理证书（ STI Myanmar University ）；中文 8 级证书（ Golden Education Chinese Center ）
+电脑能力：熟练使用  Microsoft Office Suite, Google Suite
+其它技能：多任务处理、数据录入、团队合作、领导力、沟通能力
+现居城市：缅甸仰光  Hlaing Tharyar
+到岗日期：-
+姓名： KHIN SWAM SUNG
+性别：女
+民族：若开族
+宗教：佛教
+年龄： 24 岁
+求职岗位：实习翻译
+求职地点：未提供
+期望薪资： 60 万
+身份证编号： 11/KaPhaNa(N)145925
+婚姻情况：单身
+语言能力：英语（中级）、中文（中级）、缅甸语（母语）
+工作经验： ( 行业 / 职位 / 年限 )
+零售业  /  售货员  / 2 年（超市， 2021-2023 ）
+教育  /  幼儿园老师  / 1 年（ 2023-2024 ）
+教育背景：物理学学士； HSK 4 级
+电脑能力：熟练使用  Microsoft Word 、 Excel
+其它技能：团队合作能力，良好的沟通能力
+现居城市：仰光  Hledan Kamaryut
+到岗日期： 2026 年 1 月 13 日
+姓名：何志强
+性别：男
+民族：汉
+宗教：未提供
+年龄： 50 岁
+求职岗位：电工
+求职地点：曼德勒
+期望薪资：未提供
+身份证编号：未提供
+婚姻情况：已婚
+语言能力：汉语
+工作经验： ( 行业 / 职位 / 年限 )
+电工  /  电工  / 20 年  ( 根据求职岗位推断 )
+教育背景：初中
+电脑能力：中等
+其它技能：室内装修
+现居城市：未提供
+到岗日期：随时
+姓名： Ma Cherry Win
+性别：女
+民族：未提供
+宗教：佛教
+年龄： 22 岁
+求职岗位：办公室职员
+求职地点：仰光
+期望薪资：40万
+身份证编号： 12/yapatha(N)120406
+婚姻情况：未婚
+语言能力：英语（专业学习）、缅甸语（母语）
+工作经验：-
+教育背景：英语专业（第二年在读）
+电脑能力：计算机基础；会使用  Microsoft Office (Word, Excel, PowerPoint, Email)
+其它技能：沟通能力（中级）、团队合作、解决问题、适应性与灵活性
+现居城市：缅甸仰光  Shwe pyi Thar
+到岗日期：-
+姓名：小蒋
+性别：男
+民族：华裔
+宗教：佛教
+年龄： 25 岁
+求职岗位：人事与行政助理，翻译助理
+求职地点：仰光
+期望薪资： 160-200 万  ( 需包吃住 )
+身份证编号：未提供
+婚姻情况：未婚
+语言能力：中文  ( 流利 ) 、缅语  ( 流利 ) 、英语  ( 基础 )
+工作经验： ( 行业 / 职位 / 年限 )
+教育  /  教师  /  半年  ( 禅邦省腊戌市果菁学校 )
+制造业  /  厂长助理  / 1 年  (All Round (Myanmar) Packaging Co.,Ltd.)
+投资  /  综合部助理  /  半年  (Yangon Golden Paragon Investment Co.,Ltd.)
+教育背景：中文：高三毕业；缅文：化学专业大学本科毕业
+电脑能力：熟练使用办公软件  (Word, Excel, PPT)
+其它技能：良好的抗压能力，强烈的责任感
+现居城市：仰光
+到岗日期：立即
+姓名： ဉီးကောင်းထက် (U Kaung Htet)
+性别：男
+民族：缅族  (ဗမာ)
+宗教：佛教  (ဗုဒ္ဓ ဘာသာ)
+年龄： 27 岁  
+求职岗位：文员
+求职地点：仰光
+期望薪资：面议
+身份证编号： 12/လယရ(နိုင်)002380
+婚姻情况：未婚  (မရှိ)
+语言能力：缅甸语  ( 母语 ) 、韩语  (Korea ဘာသာ)
+工作经验：
+ (Beyond Company)
+ (New Look Company)
+ (ရုပ်ပျို company)
+教育背景：仰光大学   法律专业  ( 二年级在读 )
+电脑能力：具备计算机基础  (computer)
+其它技能：行政管理技能  (Admin Skill) 、销售与市场营销  (Sale and Marketing)
+现居城市：缅甸仰光   莱达雅镇区  (လှိုင်သာယာမြို့နယ်)
+到岗日期：-
+姓名：弈秋
+性别：男
+民族：钦族
+宗教：基督教
+年龄： 21 岁
+求职岗位：中缅翻译
+求职地点：仰光
+期望薪资： 120 万起  ( 需包吃住 )
+身份证编号：未提供
+婚姻情况：未婚
+语言能力：中文  ( 流利，约 80%) 、缅语  ( 流利 )
+工作经验： ( 行业 / 职位 / 年限 )
+零售  /  收银员  /  半年
+销售  /  翻译  / 1 年
+教育背景：缅文十年级毕业；中文 HSK 5 级
+电脑能力：基础  ( 会使用  Word, Excel, PPT)
+其它技能：能吃苦耐劳
+现居城市：缅甸仰光
+到岗日期：面试通过即可
+姓名： Min Thiha
+性别：男
+民族：缅族
+宗教：佛教
+年龄： 21 岁
+求职岗位：工厂翻译
+求职地点：莱达雅区
+期望薪资：五十万到六十万
+身份证编号： 12/TAKANA (N)266716
+婚姻情况：单身
+语言能力：中文  (HSK  四级，金光学院毕业 )
+工作经验： ( 行业 / 职位 / 年限 )
+未注明  /  翻译  / 3 个月
+教育背景：高中毕业
+电脑能力：会使用，已学完  Advanced Excel
+其它技能：未提供
+现居城市：莱达雅
+到岗日期：-
+姓名： Zin Min Thu （叶明珠）
+性别：女
+民族：缅族
+宗教：佛教
+年龄： 26 岁
+求职岗位：客户服务  /  会计相关职位
+求职地点：仰光
+期望薪资：面议
+身份证编号：-
+婚姻情况：单身
+语言能力：英语（中级）、中文（基础）、缅甸语（母语）
+工作经验： ( 行业 / 职位 / 年限 )
+服装制造  /  出纳兼初级会计  / 2 年
+国际物流  /  分行客户服务  / 1 年
+教育背景：仰光大学   数学学士
+电脑能力：熟练使用  Microsoft Word, Excel, Photoshop ；熟悉电子邮件及基础办公系统
+其它技能：负责可靠、耐心细致、学习能力强、注重团队合作
+现居城市：缅甸仰光  Hlegu  镇区
+到岗日期：-
+姓名： Phoo Pyae Sone ( 刘安落）
+性别：女
+民族：缅族
+宗教：佛教
+年龄： 21 岁
+求职岗位：翻译
+求职地点：仰光
+期望薪资： 70 万～ 100 万  
+身份证编号： 13/NTY(N)027108
+婚姻情况：单身
+语言能力：中文  (HSK4) 、英文  ( 基础 ) 、缅文  ( 母语 )
+工作经验： ( 行业 / 职位 / 年限 )
+零售  /  收银员兼会计师  / 2 年  (June Mart,  曼德勒 )
+教育背景：未提供
+电脑能力：基础
+其它技能：演讲
+现居城市：东枝
+到岗日期：-
+姓名： Ma Khin Myat Mu
+性别：女
+民族：缅族
+宗教：佛教
+年龄： 44 岁
+求职岗位：人事经理
+求职地点：不限
+期望薪资： 150 万
+身份证编号： 12/AhSaNa(N)185757
+婚姻情况：单身
+语言能力：中文  ( 在学，基础 )
+工作经验： ( 行业 / 职位 / 年限 )
+制造业 ( 综合 ) /  人力资源经理  /  约 8 年 7 个月  (Well Greenoutdoor ，  2015.3-2023.10)
+制造业 ( 风扇 ) /  人力资源经理  /  约 11 个半月  (Asaihi Fan ，  2023.12-2024.11)
+制造业 ( 服装 ) /  人力资源经理  /  约 8 个月  (Haw Maw Make Clothes ，  2025.1-2025.9)
+教育背景：仰光大学   地理学学士
+电脑能力：熟练使用  MS Office (Word, Excel) 、互联网及电子邮件
+其它技能：工作认真负责
+现居城市：仰光
+到岗日期： 2026 年 11 月 1 日
+姓名： Ma Htoo Ei Khang
+性别：女
+民族：若开族  (Rakhine)
+宗教：佛教  (Buddhist)
+年龄： 26 岁  ( 按出生日期 1999 年 5 月 24 日推算 )
+求职岗位：未提供
+求职地点：未提供
+期望薪资：未提供
+身份证编号： 02/La Tha Ya(Nang)081891
+婚姻情况：单身  (Single)
+语言能力：缅甸语/英语基础
+工作经验： ( 行业 / 职位 / 年限 )
+未提供  /  办公室助理数据录入 /WI 主管  /  约 3 年 7 个月  (MGI Co Ltd ，   合计 1 年 5 个月  + 2 年 2 个月 )
+教育背景：西仰光大学动物学专业  ( 第二年在读 )
+电脑能力：计算机基础
+其它技能：工作努力，学习能力强，沟通技巧
+现居城市：缅甸仰光莱达雅镇区
+到岗日期：-
+姓名：苏诗涵  
+性别：女
+民族：缅族
+宗教：佛教
+年龄： 26 岁
+求职岗位：-
+求职地点：莱达雅
+期望薪资：面谈（需安排班车）
+身份证编号： 14/NaTaNa CN 195918
+婚姻情况：未提供
+语言能力：缅语（母语）、汉语（ HSK 4 级）、英语（初中级）
+工作经验： ( 行业 / 职位 / 年限 )
+电子商务  /  店主  /  年限未提供（自营网店卖衣服）
+教育  /  家教  /  年限未提供（小学）
+教育背景：大学
+电脑能力：会使用电脑，具备基础操作能力
+其它技能：会说汉语
+现居城市：缅甸仰光莱达雅镇区  
+到岗日期：-
+姓名：林纯杰
+性别：男
+民族：华裔
+宗教：佛教
+年龄： 28 岁
+求职岗位：翻译助理
+求职地点：仰光，莱达雅
+期望薪资： 150 万起步（可面谈）
+身份证编号： 5/MYN(P)000024
+婚姻情况：单身
+语言能力：中文、缅文
+工作经验： ( 行业 / 职位 / 年限 )
+制造业（箱包）  /  工厂工作  / 2.5 年  (Y.L.X 包包工厂 )
+制造业（鞋业）  /  工厂工作  / 1 年以上  ( 米拉花园鞋业厂 )
+制造业（服装）  /  工厂工作  / 1.5 年  ( 永恒服装厂，至今 )
+教育背景：汉语水平考试初中毕业；缅文十年级（高中）
+电脑能力：基础打字
+其它技能：未提供
+现居城市：缅甸仰光莱达亚工业区  (Hlaing Tha Yar)
+到岗日期：未提供
+姓名： Su Myat Noe
+性别：女
+民族：缅族
+宗教：佛教
+年龄： 22 岁
+求职岗位：-
+求职地点：仰光
+期望薪资： 90 万以上
+身份证编号： 7/THAWATA(N)147942
+婚姻情况：单身
+语言能力：中文  (HSK 4 级 )
+工作经验： ( 行业 / 职位 / 年限 )
+教育  /  助教老师  /  半年
+教育背景：历史学学士  (B.A History)
+电脑能力：会使用电脑
+其它技能： LCCI 2 (UK), LCCI 3 (Local)
+现居城市：缅甸仰光莱达雅镇区
+到岗日期：-
+姓名：李国跃  (Myint Swe)
+性别：男
+民族：华裔  
+宗教：佛教
+年龄： 50 岁
+求职岗位：电气工程师  /  机电主管  /  厂务主管
+求职地点：未明确  ( 有在新加坡、缅甸、越南的工作经历 )
+期望薪资：面议
+身份证编号：未提供
+婚姻情况：未提供
+语言能力：中文  ( 高级， HSK) 、英文  ( 流利，雅思 B2) 、缅甸语  ( 母语 )
+工作经验： ( 行业 / 职位 / 年限 )
+电子制造  /  机电专员  / 0.5 年  (Foxlink Da Nang ，   越南，  2024.8-2025.2)
+电子制造  /  厂务课长  / 1.25 年  (Foxlink Myanmar ，   缅甸，  2023.5-2024.8)
+钢铁制造  /  电气技术员  / 0.75 年  (Myanmar Mandalay Fu Xin Steel ，  2022.7-2023.4)
+石油化工  /  助理电气工程师  / 8.5 年  (OHM Engineering Pte Ltd ，   新加坡，  2010.6-2018.12)
+石油化工  /  电气主管  / 2 年  (Plant Electrical Instrumentation Pte Ltd ，   新加坡，  2008.5-2010.5)
+教育背景：电力系统工程高级文凭  ( 新加坡理工学院， 2013) ；英文研究生文凭  ( 仰光大学， 2006) ；电气工程文凭  ( 缅甸理工学院， 1992)
+电脑能力：精通  Word, Excel, PowerPoint, Project, AutoCAD, PLC, AI ；能用软件绘制工程图
+其它技能：驾驶  ( 有驾照 ) ；项目管理  ( 预算、进度、协调 ) ；设备维护保养
+现居城市：缅甸  
+到岗日期：-
+姓名：王丽
+性别：女
+民族：缅族
+宗教：佛教
+年龄： 27 岁
+求职岗位：中缅翻译  /  服装厂翻译
+求职地点：仰光
+期望薪资：月薪 160-200 万
+身份证编号： 13/Ta Ka Na (N) 369278
+婚姻情况：未婚
+语言能力：中文、缅文
+工作经验： ( 行业 / 职位 / 年限 )
+制造业  ( 变压器 ) /  翻译  / 2 年
+制造业  ( 服装 ) /  翻译  / 4 年
+教育背景：缅文大学毕业
+电脑能力：熟练使用  Word, Excel
+其它技能：未提供
+现居城市：仰光
+到岗日期：-
+姓名：小瞿
+性别：男
+民族：汉族
+宗教：佛教
+年龄：约 33 岁  ( 按出生日期 1991 年 9 月 17 日推算 )
+求职岗位：司机翻译 + 管理
+求职地点：仰光
+期望薪资：月薪 150 万
+身份证编号：未提供
+婚姻情况：已婚
+语言能力：中文、缅语  ( 流利 )
+工作经验： ( 行业 / 职位 / 年限 )
+制造业  ( 绣花 ) /  相关工作  / 1 年
+建筑  /  工地翻译  / 2 年
+建筑  /  设备维修管理、搅拌站管理、翻译采购  / 8 年
+教育背景：中文：初中；缅文：初中
+电脑能力：不会
+其它技能：驾驶  ( 有驾驶证，熟悉仰光路线 ) ；设备维修管理；采购
+现居城市：仰光
+到岗日期：-
+姓名：阿加  (AggaPhyo)
+性别：男
+民族：缅族
+宗教：佛教
+年龄： 31 岁
+求职岗位：翻译
+求职地点：仰光
+期望薪资： 150 万以上
+身份证编号： 12/0uKaMa(N)232169
+婚姻情况：单身
+语言能力：中文  ( 在猛啦自学 ) 、英语  ( 基础 )
+工作经验： ( 行业 / 职位 / 年限 )
+通信  /  安装员  / 1 年  (WiFi 公司， 2018 年 )
+酒店  /  客房服务员  / 1 年  ( 喜来登酒店， 2019 年 )
+制造业  /  翻译  / 1 年  ( 水泥厂， 2020 年 )
+酒店  /  主管  / 2 年  ( 中国成酒店， 2021-2023 年 )
+教育背景：达贡大学地质学专业  (2017 年毕业 )
+电脑能力：基础
+其它技能：管理能力强，学习能力强，善于合作，有谈判技巧
+现居城市：缅甸仰光北奥卡拉帕镇区  (North Okkalapa)
+到岗日期：-
+姓名：郑怡玲  (Pan Ei Phway)
+性别：女
+民族：华裔
+宗教：佛教
+年龄： 25 岁
+求职岗位：客服经理、助理、翻译、会计师
+求职地点：曼德勒（居家办公）
+期望薪资：商议
+身份证编号：-
+婚姻情况：-
+语言能力：中文（ HSK 4 级以上，高中水平）、英文（大学级，雅思中级）、缅甸语（母语）
+工作经验： ( 行业 / 职位 / 年限 )
+会计事务所  /  客服经理、保险销售员、翻译员  / 2 年  (AAA American CPA ，  2021-2023)
+珠宝玉石  /  财务兼翻译助理  / 5 个月  (Myitzutha Company ，  2024.11-2025.3)
+零售  /  助理兼翻译  / 1 年  (PANDAMALL 手机销售店，  2023)
+零售  /  高级经理、销售员、收银员  / 3 年  (PLEASANT FASHION SHOP ，  2016-2019)
+教育背景：法律专业（ Yadanarbon University ，本科在读）； LCCI Level 2  簿记与会计（ Merit ）；中文教育（孔教学校、云华学校、昌华学校）； KMD 初级电脑文凭； Socialbiz Myanmar 网络数据市场学证书
+电脑能力：熟练使用  Windows 平台各类软件， Word, Excel, PowerPoint, PPT, Adobe Page Maker 8.0 ，平面设计
+其它技能：驾驶（有驾照）；团队协作；沟通能力强；责任心强；适应力强；创新思维
+现居城市：缅甸曼德勒
+到岗日期：商议
+姓名：尹必山
+性别：男
+民族：汉族
+宗教：佛教
+年龄： 39 岁
+求职岗位：厨师
+求职地点：不限地区
+期望薪资： 300 万至 400 万缅币
+身份证编号： 13/(TYN)000050
+婚姻情况：正在择偶
+语言能力：汉语、缅语（沟通良好）
+工作经验： ( 行业 / 职位 / 年限 )
+餐饮业  /  小弟、打合、砧板、帮厨、厨师  /  数年（曾在国外工作）
+教育背景：中文初中毕业；缅文小学毕业
+电脑能力：正在学习拼音打字
+其它技能：曾学习过多个行业技能
+现居城市：丹阳
+到岗日期：希望在 3 月至 4 月左右
+姓名：张绍印
+性别：男
+民族：汉族
+宗教：-
+年龄：53岁
+求职岗位：生产线辅导师傅
+求职地点：不限
+期望薪资：1.6万人民币左右/月
+身份证编号：34210XXXX305XXXX15
+婚姻情况：已婚
+语言能力：-
+工作经验：(行业/职位/年限)
+服装制造 / 组长到车间主任 / 6年 (常州市华丽达服装有限公司，2001-2007，生产优衣库羽绒服)
+服装制造 / 车间主任 / 9年 (常州市豪王服装限公司，2008-2017，生产针织裤子、校服、梭织纱卡裤)
+服装制造 / 工厂负责人 / 4年 (常州市辰佳服装厂，2018-2022，自营加工厂)
+服装制造 / 带线师傅 / 约2年 (非洲肯尼亚尚城国际，2023.2-2025.3，5条线，200人左右)
+服装制造 / 带线师傅 / 约8个月 (非洲肯尼亚EBK，2025.4-2025.12，5条线，180人左右)
+教育背景：初中
+电脑能力：-
+其它技能：擅长细化工序、优化流程、提高产能、质量控制；熟悉优衣库羽绒服、夹克、李维斯牛仔、针织衫、童装连衣裙等多种品类生产；成功推行单件推流模式，提高产量28%-30%
+现居城市：江苏常州
+到岗日期：-`;
+
+        // ==========================================
+        // 2. 数据解析器
+        // ==========================================
+        function parseResumes(text) {
+            const resumes = [];
+            const blocks = text.split(/姓名[：:]/g).filter(b => b.trim());
+
+            blocks.forEach((block, index) => {
+                const lines = block.split('\n').map(l => l.trim()).filter(l => l);
+                if (lines.length === 0) return;
+                
+                const resume = { id: index, name: lines[0], fullText: block };
+                let currentKey = '';
+
+                lines.slice(1).forEach(line => {
+                    const match = line.match(/^(性别|民族|宗教|宗教信仰|年龄|求职岗位|求职地点|求职地方|期望薪资|身份证编号|婚姻情况|语言能力|工作经验|教育背景|电脑能力|其它技能|现居城市|到岗日期|补充说明与亮点)[：:](.*)/);
+                    if (match) {
+                        currentKey = match[1];
+                        resume[currentKey] = match[2].trim();
+                    } else if (currentKey) {
+                        resume[currentKey] += '\n' + line;
+                    }
+                });
+
+                resume.location = resume['求职地点'] || resume['求职地方'] || '-';
+                resume.religion = resume['宗教'] || resume['宗教信仰'] || '-';
+                resume.position = resume['求职岗位'] || '-';
+                resume.age = resume['年龄'] || '-';
+                resume.gender = resume['性别'] || '-';
+                resume.salary = resume['期望薪资'] || '-';
+                
+                resumes.push(resume);
+            });
+            return resumes;
+        }
+
+        // ==========================================
+        // 3. UI 组件
+        // ==========================================
+        function App() {
+            const [searchTerm, setSearchTerm] = useState('');
+            const [selectedCandidate, setSelectedCandidate] = useState(null);
+            const [aiState, setAiState] = useState({ loading: false, result: '', error: '', type: '' });
+
+            useEffect(() => {
+                setAiState({ loading: false, result: '', error: '', type: '' });
+            }, [selectedCandidate]);
+
+            const callDeepSeekAPI = async (prompt, type) => {
+                const DEEPSEEK_API_KEY = "sk-5efa2dc64e9343e8b0abe6967ed153a1";
+                
+                setAiState({ loading: true, result: '', error: '', type });
+                const url = `https://api.deepseek.com/chat/completions`;
+                const payload = {
+                    model: "deepseek-chat",
+                    messages: [
+                        { role: "system", content: "你是一位专业的人力资源专家和面试官。" },
+                        { role: "user", content: prompt }
+                    ]
+                };
+
+                const delays = [1000, 2000, 4000];
+                
+                for (let i = 0; i <= delays.length; i++) {
+                    try {
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: { 
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${DEEPSEEK_API_KEY}`
+                            },
+                            body: JSON.stringify(payload)
+                        });
+                        
+                        if (!response.ok) {
+                            const errData = await response.json().catch(() => ({}));
+                            throw new Error(errData.error?.message || `HTTP error! status: ${response.status}`);
+                        }
+                        const data = await response.json();
+                        
+                        if (data.choices && data.choices[0].message.content) {
+                            setAiState({ loading: false, result: data.choices[0].message.content, error: '', type });
+                            return;
+                        } else {
+                            throw new Error("Invalid response format from DeepSeek");
+                        }
+                    } catch (error) {
+                        if (i === delays.length) {
+                            setAiState({ loading: false, result: '', error: `DeepSeek 请求失败: ${error.message}`, type: '' });
+                            return;
+                        }
+                        await new Promise(resolve => setTimeout(resolve, delays[i]));
+                    }
+                }
+            };
+
+            const handleAIEvaluation = () => {
+                const prompt = `你是一位资深的人力资源专家（HR）。请根据以下候选人的简历，给出简明扼要的【AI 智能评估】。
+要求包含：
+1. 候选人的三大核心优势
+2. 可能存在的一个隐患或短板
+3. 整体推荐指数（使用 1-5 个 ★ 表示）
+
+简历内容如下：
+${selectedCandidate.fullText}`;
+                callDeepSeekAPI(prompt, 'eval');
+            };
+
+            const handleAIQuestions = () => {
+                const prompt = `你是一位专业的面试官。请根据以下候选人的简历内容，为其量身定制 3 个深度的面试问题。
+要求：
+- 问题不仅限于表面经历，还要考察其专业能力和解决问题的实际能力。
+- 语气专业，直接列出问题，不要输出多余的寒暄语。
+
+简历内容如下：
+${selectedCandidate.fullText}`;
+                callDeepSeekAPI(prompt, 'questions');
+            };
+
+            const candidates = useMemo(() => parseResumes(rawResumeData), []);
+
+            const filteredCandidates = useMemo(() => {
+                if (!searchTerm) return candidates;
+                const lowerTerm = searchTerm.toLowerCase();
+                return candidates.filter(c => 
+                    (c.name && c.name.toLowerCase().includes(lowerTerm)) ||
+                    (c.position && c.position.toLowerCase().includes(lowerTerm)) ||
+                    (c.location && c.location.toLowerCase().includes(lowerTerm)) ||
+                    (c['语言能力'] && c['语言能力'].toLowerCase().includes(lowerTerm))
+                );
+            }, [candidates, searchTerm]);
+
+            return (
+                <div className="min-h-screen bg-gray-50 font-sans text-gray-800">
+                    <header className="bg-black text-white shadow-lg sticky top-0 z-10 border-b-4 border-red-700">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between">
+                            <div className="flex items-center space-x-4">
+                                <div className="relative h-14 w-14 bg-red-700 rounded-full flex items-center justify-center border-2 border-black overflow-hidden shadow-inner">
+                                    <img src="JD HR Logo.jpg" alt="Logo" className="absolute inset-0 w-full h-full object-cover" onError={(e) => e.target.style.display='none'} />
+                                    <div className="flex flex-col items-center justify-center z-[-1]">
+                                        <div className="w-4 h-4 rounded-full bg-yellow-500 flex items-center justify-center mb-1">
+                                            <div className="w-1.5 h-1.5 bg-red-700 transform rotate-45"></div>
+                                        </div>
+                                        <div className="text-black font-bold text-xs leading-none" style={{transform: 'scaleX(1.5)'}}>鼎</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h1 className="text-2xl font-black text-red-600 tracking-wider">九鼎人力资源</h1>
+                                    <p className="text-xs text-gray-400 tracking-widest">JIUDING HUMAN RESOURCES</p>
+                                </div>
+                            </div>
+                            
+                            <div className="mt-4 sm:mt-0 relative w-full sm:w-80">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <Search className="h-5 w-5 text-gray-400" />
+                                </div>
+                                <input
+                                    type="text"
+                                    placeholder="搜索岗位、姓名、地点、语言..."
+                                    className="block w-full pl-10 pr-3 py-2 border-2 border-gray-700 rounded-md leading-5 bg-gray-900 text-gray-100 placeholder-gray-500 focus:outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600 sm:text-sm transition-colors"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                    </header>
+
+                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                        <div className="mb-6 flex justify-between items-center">
+                            <h2 className="text-xl font-bold border-l-4 border-red-600 pl-3 text-gray-900">
+                                人才简历库 <span className="text-sm font-normal text-gray-500 ml-2">({filteredCandidates.length} 位候选人)</span>
+                            </h2>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            {filteredCandidates.map(candidate => (
+                                <div key={candidate.id} className="bg-white rounded-lg shadow border-t-4 border-t-red-700 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col">
+                                    <div className="p-5 flex-grow">
+                                        <div className="flex justify-between items-start mb-3">
+                                            <h3 className="text-lg font-bold text-gray-900 truncate pr-2" title={candidate.name}>
+                                                {candidate.name}
+                                            </h3>
+                                            <span className={`px-2 py-1 text-xs font-semibold rounded-full whitespace-nowrap ${
+                                                candidate.gender === '男' ? 'bg-blue-100 text-blue-800' : 
+                                                candidate.gender === '女' ? 'bg-pink-100 text-pink-800' : 'bg-gray-100 text-gray-800'
+                                            }`}>
+                                                {candidate.gender} | {candidate.age}
+                                            </span>
+                                        </div>
+                                        
+                                        <div className="space-y-2 mb-4">
+                                            <div className="flex items-center text-sm text-gray-700">
+                                                <Briefcase className="h-4 w-4 mr-2 text-red-600 flex-shrink-0" />
+                                                <span className="font-semibold truncate">{candidate.position}</span>
+                                            </div>
+                                            <div className="flex items-center text-sm text-gray-600">
+                                                <MapPin className="h-4 w-4 mr-2 text-gray-400 flex-shrink-0" />
+                                                <span className="truncate">{candidate.location}</span>
+                                            </div>
+                                            <div className="flex items-center text-sm text-gray-600">
+                                                <DollarSign className="h-4 w-4 mr-2 text-yellow-600 flex-shrink-0" />
+                                                <span className="truncate">{candidate.salary}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="mt-4 pt-4 border-t border-gray-100">
+                                            <p className="text-xs text-gray-500 font-semibold mb-1">语言能力</p>
+                                            <p className="text-xs text-gray-700 line-clamp-2" title={candidate['语言能力']}>
+                                                {candidate['语言能力'] || '未提供'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="px-5 py-3 bg-gray-50 rounded-b-lg border-t border-gray-100">
+                                        <button onClick={() => setSelectedCandidate(candidate)} className="w-full text-center text-sm font-semibold text-red-700 hover:text-red-800 transition-colors py-1">
+                                            查看详细简历 &rarr;
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {filteredCandidates.length === 0 && (
+                            <div className="text-center py-20 text-gray-500">
+                                <User className="h-16 w-16 mx-auto text-gray-300 mb-4" />
+                                <p className="text-lg">未找到匹配的候选人</p>
+                            </div>
+                        )}
+                    </main>
+
+                    {selectedCandidate && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60 backdrop-blur-sm transition-opacity">
+                            <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+                                <div className="bg-red-700 px-6 py-4 flex justify-between items-center text-white">
+                                    <div>
+                                        <h2 className="text-2xl font-bold">{selectedCandidate.name}</h2>
+                                        <p className="text-red-100 text-sm mt-1">{selectedCandidate.position} • {selectedCandidate.location}</p>
+                                    </div>
+                                    <button onClick={() => setSelectedCandidate(null)} className="text-red-200 hover:text-white transition-colors p-2 bg-red-800 rounded-full hover:bg-red-900">
+                                        ✕
+                                    </button>
+                                </div>
+
+                                <div className="p-6 overflow-y-auto bg-gray-50 flex-grow">
+                                    <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-5 rounded-lg shadow-sm border border-indigo-100 mb-6">
+                                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 border-b border-indigo-200 pb-3 gap-3">
+                                            <h3 className="text-md font-bold text-indigo-900 flex items-center whitespace-nowrap">
+                                                <Bot className="w-5 h-5 mr-2 text-indigo-600" /> DeepSeek 智能助理
+                                            </h3>
+                                            <div className="space-x-3 flex w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+                                                <button onClick={handleAIEvaluation} disabled={aiState.loading} className="flex items-center justify-center flex-1 sm:flex-none text-sm bg-indigo-600 hover:bg-indigo-700 text-white py-1.5 px-3 rounded-md transition-colors disabled:opacity-50 whitespace-nowrap">
+                                                    {aiState.loading && aiState.type === 'eval' ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Sparkles className="w-4 h-4 mr-1.5 text-yellow-300" />}
+                                                    智能评估
+                                                </button>
+                                                <button onClick={handleAIQuestions} disabled={aiState.loading} className="flex items-center justify-center flex-1 sm:flex-none text-sm bg-purple-600 hover:bg-purple-700 text-white py-1.5 px-3 rounded-md transition-colors disabled:opacity-50 whitespace-nowrap">
+                                                    {aiState.loading && aiState.type === 'questions' ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Sparkles className="w-4 h-4 mr-1.5 text-yellow-300" />}
+                                                    定制面试题
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {aiState.loading && (
+                                            <div className="text-center py-6 text-indigo-400 flex flex-col items-center">
+                                                <Loader2 className="w-8 h-8 animate-spin mb-2 text-indigo-600" />
+                                                <p className="text-sm">DeepSeek 正在深度分析候选人经历...</p>
+                                            </div>
+                                        )}
+                                        {aiState.error && (
+                                            <div className="p-4 bg-red-50 text-red-600 rounded-md text-sm border border-red-200">
+                                                {aiState.error}
+                                            </div>
+                                        )}
+                                        {aiState.result && !aiState.loading && (
+                                            <div className="p-4 bg-white rounded-md shadow-inner text-sm text-gray-800 whitespace-pre-wrap leading-relaxed border border-indigo-50 max-h-60 overflow-y-auto">
+                                                {aiState.result}
+                                            </div>
+                                        )}
+                                        {!aiState.loading && !aiState.result && !aiState.error && (
+                                            <p className="text-sm text-indigo-400 text-center py-2">点击上方按钮，让 AI 帮您快速洞察候选人亮点与风险。</p>
+                                        )}
+                                    </div>
+
+                                    <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200 mb-6">
+                                        <h3 className="text-md font-bold text-gray-900 border-b pb-2 mb-4 flex items-center">
+                                            <User className="w-5 h-5 mr-2 text-red-600" /> 基本信息
+                                        </h3>
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-4 gap-x-6 text-sm">
+                                            <InfoItem label="性别" value={selectedCandidate.gender} />
+                                            <InfoItem label="年龄" value={selectedCandidate.age} />
+                                            <InfoItem label="民族" value={selectedCandidate['民族']} />
+                                            <InfoItem label="婚姻状况" value={selectedCandidate['婚姻情况']} />
+                                            <InfoItem label="宗教" value={selectedCandidate.religion} />
+                                            <InfoItem label="现居城市" value={selectedCandidate['现居城市']} />
+                                            <InfoItem label="期望薪资" value={selectedCandidate.salary} className="col-span-2 sm:col-span-1 text-yellow-700 font-semibold" />
+                                            <InfoItem label="到岗日期" value={selectedCandidate['到岗日期']} />
+                                            <InfoItem label="身份证" value={selectedCandidate['身份证编号']} className="col-span-2 sm:col-span-3 text-gray-500" />
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200 mb-6">
+                                        <h3 className="text-md font-bold text-gray-900 border-b pb-2 mb-4 flex items-center">
+                                            <Award className="w-5 h-5 mr-2 text-red-600" /> 技能与语言
+                                        </h3>
+                                        <div className="space-y-4 text-sm">
+                                            <div>
+                                                <span className="font-semibold text-gray-700 block mb-1">语言能力：</span>
+                                                <p className="text-gray-800 bg-blue-50 p-3 rounded">{selectedCandidate['语言能力'] || '-'}</p>
+                                            </div>
+                                            <div>
+                                                <span className="font-semibold text-gray-700 block mb-1">电脑能力：</span>
+                                                <p className="text-gray-800 whitespace-pre-line">{selectedCandidate['电脑能力'] || '-'}</p>
+                                            </div>
+                                            <div>
+                                                <span className="font-semibold text-gray-700 block mb-1">其它技能：</span>
+                                                <p className="text-gray-800 whitespace-pre-line">{selectedCandidate['其它技能'] || '-'}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200 mb-6">
+                                        <h3 className="text-md font-bold text-gray-900 border-b pb-2 mb-4 flex items-center">
+                                            <Briefcase className="w-5 h-5 mr-2 text-red-600" /> 工作经验
+                                        </h3>
+                                        <div className="text-sm text-gray-800 whitespace-pre-line leading-relaxed">
+                                            {selectedCandidate['工作经验'] || '暂无说明'}
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
+                                        <h3 className="text-md font-bold text-gray-900 border-b pb-2 mb-4 flex items-center">
+                                            <BookOpen className="w-5 h-5 mr-2 text-red-600" /> 教育背景
+                                        </h3>
+                                        <div className="text-sm text-gray-800 whitespace-pre-line leading-relaxed">
+                                            {selectedCandidate['教育背景'] || '暂无说明'}
+                                        </div>
+                                    </div>
+
+                                    {selectedCandidate['补充说明与亮点'] && (
+                                        <div className="bg-yellow-50 p-5 rounded-lg shadow-sm border border-yellow-200 mt-6">
+                                            <h3 className="text-md font-bold text-yellow-800 pb-2 mb-2">补充说明与亮点</h3>
+                                            <div className="text-sm text-yellow-900 whitespace-pre-line leading-relaxed">
+                                                {selectedCandidate['补充说明与亮点']}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                                
+                                <div className="bg-gray-100 px-6 py-4 border-t flex justify-end">
+                                    <button onClick={() => setSelectedCandidate(null)} className="bg-gray-800 text-white px-6 py-2 rounded shadow hover:bg-black transition-colors">
+                                        关闭
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        function InfoItem({ label, value, className = "" }) {
+            return (
+                <div className={className}>
+                    <span className="block text-xs text-gray-500 mb-1">{label}</span>
+                    <span className="block font-medium text-gray-900 truncate" title={value}>{value && value !== '-' ? value : '未提供'}</span>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
